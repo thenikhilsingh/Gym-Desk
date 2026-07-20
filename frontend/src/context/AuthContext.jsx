@@ -3,8 +3,12 @@ import { createContext, useState } from "react";
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
-  const [token, setToken] = useState(null);
+  const storeTokenInLS = (serverToken) => {
+    return localStorage.setItem("token", serverToken);
+  };
   return (
-    <AuthContext.Provider value={{ token }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ storeTokenInLS }}>
+      {children}
+    </AuthContext.Provider>
   );
 }

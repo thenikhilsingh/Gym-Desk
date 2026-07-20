@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Signup() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const { storeTokenInLS } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [payload, setPayload] = useState({
@@ -26,6 +28,7 @@ export default function Signup() {
         payload,
       );
       if (response.status === 201) {
+        storeTokenInLS(response.data.token);
         navigate("/");
         setPayload({
           firstname: "",
