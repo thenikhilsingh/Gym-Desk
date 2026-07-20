@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
+import Home from "./pages/Home.jsx";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -21,7 +22,7 @@ const router = createBrowserRouter(
       {/* Admin Routes */}
       {/* App Routes */}
       <Route path="/app" element={<App />}>
-        {/* <Route index element={<Home />}></Route> */}
+        <Route index element={<Home />}></Route>
       </Route>
     </>,
   ),
