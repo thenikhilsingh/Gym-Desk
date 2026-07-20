@@ -19,7 +19,7 @@ const register = async (req, res) => {
       email,
       hashed_password,
     );
-    const generatedToken = await jwt.sign(
+    const generatedToken = jwt.sign(
       {
         userId: userCreated.id,
         email: userCreated.email,
@@ -37,8 +37,48 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ msg: "Internal Server Error" });
+    res.status(500).json({ msg: "Internal Server Error" });
   }
 };
 
-module.exports = { register };
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const userExist = await getUserbyEmail(email);
+    if (!userExist) {
+      return res.status(400).send({ msg: "Invalid Credentials!" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, userExist.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password!",
+      });
+    }
+    const generatedToken = jwt.sign(
+      {
+        userId: userExist.id,
+        email: userExist.email,
+        isAdmin: userExist.is_admin,
+      },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "30d",
+      },
+    );
+
+    return res.status(200).json({
+      msg: "Login Successfull!",
+      token: generatedToken,
+      userId: userExist.id.toString(),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
+module.exports = { register, login };
