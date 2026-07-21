@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const { authRouter } = require("./routers/authRouter");
 dotenv.config();
 const cors = require("cors");
+const plansRouter = require("./routers/plansRouter");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(
 );
 app.use(express.json());
 app.use("/api/auth", authRouter);
+app.use("/api/plans", plansRouter);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

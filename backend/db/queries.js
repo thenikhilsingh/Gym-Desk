@@ -21,8 +21,21 @@ const createUser = async (firstName, lastName, email, password) => {
   return create.rows[0];
 };
 
+const addPlan = async (planName, duration, price, description, isActive) => {
+  const create = await pool.query(
+    `
+    INSERT INTO plans (plan_name, duration, price, description, is_active)
+    VALUES($1,$2,$3,$4,$5)
+    RETURNING *
+    `,
+    [planName, duration, price, description, isActive],
+  );
+  return create.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
   createUser,
+  addPlan,
 };
