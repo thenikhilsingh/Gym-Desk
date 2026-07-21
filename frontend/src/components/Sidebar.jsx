@@ -21,6 +21,11 @@ const menuItems = [
     icon: <LayoutDashboard size={20} />,
     path: "/admin",
   },
+  {
+    title: "Plans",
+    icon: <CreditCard size={20} />,
+    path: "/admin/plans",
+  },
 ];
 
 export default function Sidebar() {

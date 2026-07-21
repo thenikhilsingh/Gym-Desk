@@ -18,6 +18,7 @@ import Admin from "./pages/Admin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Plans from "./pages/Plans.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +30,7 @@ const router = createBrowserRouter(
       {/* Admin Routes */}
       <Route path="/admin" element={<Admin />}>
         <Route index element={<AdminDashboard />}></Route>
+        <Route path="plans" element={<Plans />}></Route>
       </Route>
       {/* App Routes */}
       <Route path="/app" element={<App />}>
