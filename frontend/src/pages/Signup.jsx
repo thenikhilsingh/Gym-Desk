@@ -8,10 +8,12 @@ export default function Signup() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { storeTokenInLS } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState([]);
   const navigate = useNavigate();
   const [payload, setPayload] = useState({
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
   });
@@ -22,6 +24,7 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/auth/register`,
@@ -31,14 +34,16 @@ export default function Signup() {
         storeTokenInLS(response.data.token);
         navigate("/");
         setPayload({
-          firstname: "",
-          lastname: "",
+          firstName: "",
+          lastName: "",
           email: "",
           password: "",
         });
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,8 +94,8 @@ export default function Signup() {
                     type="text"
                     placeholder="John"
                     className="mt-2 h-12 w-full rounded-full border border-gray-200 px-5 text-sm placeholder:text-gray-400 outline-none transition-all focus:border-black focus:ring-4 focus:ring-black/5"
-                    name="firstname"
-                    value={payload.firstname}
+                    name="firstName"
+                    value={payload.firstName}
                     onChange={handleChange}
                   />
                 </div>
@@ -102,8 +107,8 @@ export default function Signup() {
                     type="text"
                     placeholder="Doe"
                     className="mt-2 h-12 w-full rounded-full border border-gray-200 px-5 text-sm placeholder:text-gray-400 outline-none transition-all focus:border-black focus:ring-4 focus:ring-black/5"
-                    name="lastname"
-                    value={payload.lastname}
+                    name="lastName"
+                    value={payload.lastName}
                     onChange={handleChange}
                   />
                 </div>
@@ -156,9 +161,10 @@ export default function Signup() {
               {/* Button */}
               <button
                 type="submit"
+                disabled={loading}
                 className="mt-2 h-12 w-full rounded-full bg-black text-sm font-medium text-white transition hover:bg-neutral-800 active:scale-[0.99]"
               >
-                Create Account
+                {loading ? "Creating..." : "Create Account"}
               </button>
             </form>
           </div>
