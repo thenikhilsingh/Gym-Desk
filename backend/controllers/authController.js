@@ -81,4 +81,14 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const user = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    return res.status(200).json({ loggedInUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
+module.exports = { register, login, user };
