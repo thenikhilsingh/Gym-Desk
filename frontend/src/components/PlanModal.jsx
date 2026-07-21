@@ -1,7 +1,72 @@
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
+import useAxios from "../hooks/useAxios";
+import { toast } from "react-toastify";
 
 export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
+  const api = useAxios();
+  const [loading, setLoading] = useState(false);
+  const [payload, setPayload] = useState({
+    planName: "",
+    duration: "",
+    price: "",
+    description: "",
+    isActive: true,
+  });
+
+  const handleChange = (e) => {
+    setPayload({
+      ...payload,
+      [e.target.name]:
+        e.target.type === "checkbox"
+          ? e.target.checked
+          : e.target.type === "number" || e.target.name === "duration"
+            ? Number(e.target.value)
+            : e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isEdit) {
+        console.log("Edit");
+      } else {
+        const response = await api.post("/api/plans/create", payload);
+        if (response.status === 201) {
+          closeModal();
+          toast.success(
+            response?.data?.message || "Plan created Successfully!",
+          );
+          setPayload({
+            planName: "",
+            duration: "",
+            price: "",
+            description: "",
+            isActive: true,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setPayload({
+      planName: "",
+      duration: "",
+      price: "",
+      description: "",
+      isActive: true,
+    });
+    closeModal();
+  };
+
   if (!openPlanModal) return null;
 
   return (
@@ -14,7 +79,7 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
           </h2>
 
           <button
-            onClick={closeModal}
+            onClick={handleClose}
             className="p-2 rounded-lg hover:bg-gray-100"
           >
             <X size={22} />
@@ -22,7 +87,7 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
         </div>
 
         {/* Body */}
-        <form className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Plan Name */}
           <div>
             <label className="block text-sm font-medium mb-2">Plan Name</label>
@@ -31,6 +96,9 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
               type="text"
               placeholder="Monthly Plan"
               className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-black outline-none"
+              name="planName"
+              value={payload.planName}
+              onChange={handleChange}
             />
           </div>
 
@@ -39,11 +107,17 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
             <div>
               <label className="block text-sm font-medium mb-2">Duration</label>
 
-              <select className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-black outline-none">
-                <option>1 Month</option>
-                <option>3 Months</option>
-                <option>6 Months</option>
-                <option>12 Months</option>
+              <select
+                name="duration"
+                value={payload.duration}
+                onChange={handleChange}
+                className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-black outline-none"
+              >
+                <option value="">--SELECT DURATION--</option>
+                <option value={1}>1 Month</option>
+                <option value={3}>3 Months</option>
+                <option value={6}>6 Months</option>
+                <option value={12}>12 Months</option>
               </select>
             </div>
 
@@ -56,6 +130,9 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
                 type="number"
                 placeholder="999"
                 className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-black outline-none"
+                name="price"
+                value={payload.price}
+                onChange={handleChange}
               />
             </div>
           </div>
@@ -70,6 +147,9 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
               rows={4}
               placeholder="Enter plan description..."
               className="w-full border rounded-lg px-4 py-3 resize-none focus:ring-2 focus:ring-black outline-none"
+              name="description"
+              value={payload.description}
+              onChange={handleChange}
             />
           </div>
 
@@ -83,7 +163,13 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
             </div>
 
             <label className="relative inline-flex cursor-pointer items-center">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
+              <input
+                type="checkbox"
+                name="isActive"
+                checked={payload.isActive}
+                onChange={handleChange}
+                className="sr-only peer"
+              />
 
               <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition"></div>
 
@@ -95,7 +181,7 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
           <div className="flex justify-end gap-3 pt-3">
             <button
               type="button"
-              onClick={closeModal}
+              onClick={handleClose}
               className="border px-5 py-2.5 rounded-lg hover:bg-gray-100"
             >
               Cancel
@@ -103,9 +189,16 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
 
             <button
               type="submit"
+              disabled={loading}
               className="bg-black text-white px-6 py-2.5 rounded-lg hover:bg-gray-800"
             >
-              {isEdit ? "Update Plan" : "Create Plan"}
+              {loading
+                ? isEdit
+                  ? "Updating..."
+                  : "Creating..."
+                : isEdit
+                  ? "Update Plan"
+                  : "Create Plan"}
             </button>
           </div>
         </form>
