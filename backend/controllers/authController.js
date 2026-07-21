@@ -74,6 +74,7 @@ const login = async (req, res) => {
       msg: "Login Successfull!",
       token: generatedToken,
       userId: userExist.id.toString(),
+      isAdmin: userExist.is_admin,
     });
   } catch (error) {
     console.error(error);

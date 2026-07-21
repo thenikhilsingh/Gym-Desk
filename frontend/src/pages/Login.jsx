@@ -25,9 +25,14 @@ export default function Login() {
         `${API_BASE_URL}/api/auth/login`,
         payload,
       );
+
       if ((response.status = 200)) {
         storeTokenInLS(response.data.token);
-        navigate("/app");
+        if (response.data.isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/app");
+        }
         setPayload({
           email: "",
           password: "",
