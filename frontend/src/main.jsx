@@ -14,6 +14,8 @@ import {
 import AuthProvider from "./context/AuthContext.jsx";
 import Logout from "./components/Logout.jsx";
 import Error from "./pages/Error.jsx";
+import Admin from "./pages/Admin.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +25,9 @@ const router = createBrowserRouter(
       <Route path="/signup" element={<Signup />}></Route>
       <Route path="/logout" element={<Logout />}></Route>
       {/* Admin Routes */}
+      <Route path="/admin" element={<Admin />}>
+        <Route index element={<AdminDashboard />}></Route>
+      </Route>
       {/* App Routes */}
       <Route path="/app" element={<App />}>
         <Route index element={<Home />}></Route>
