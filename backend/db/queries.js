@@ -5,6 +5,14 @@ const getUserbyEmail = async (email) => {
   return user.rows[0];
 };
 
+const getUserbyEmailButWithoutPassword = async (email) => {
+  const user = await pool.query(
+    "SELECT id,first_name,last_name,email,is_admin,created_at FROM users WHERE email=$1",
+    [email],
+  );
+  return user.rows[0];
+};
+
 const createUser = async (firstName, lastName, email, password) => {
   const create = await pool.query(
     "INSERT INTO users (first_name,last_name,email,password) VALUES ($1,$2,$3,$4)  RETURNING id, first_name, last_name, email, is_admin, created_at",
@@ -13,4 +21,8 @@ const createUser = async (firstName, lastName, email, password) => {
   return create.rows[0];
 };
 
-module.exports = { getUserbyEmail, createUser };
+module.exports = {
+  getUserbyEmail,
+  getUserbyEmailButWithoutPassword,
+  createUser,
+};

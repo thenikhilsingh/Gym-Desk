@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { getUserbyEmail } = require("../db/queries");
+const { getUserbyEmailButWithoutPassword } = require("../db/queries");
 
 const authMiddleware = async (req, res, next) => {
   const token = req.header("Authorization");
@@ -14,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
   try {
     const isVerified = jwt.verify(jwtToken, process.env.JWT_SECRET_KEY);
 
-    const userData = await getUserbyEmail(isVerified.email);
+    const userData = await getUserbyEmailButWithoutPassword(isVerified.email);
 
     req.user = userData;
     req.token = token;
