@@ -1,8 +1,13 @@
 const { getUserbyEmail, createUser } = require("../db/queries");
 const bcrypt = require("bcryptjs");
+const { validationResult } = require("../validators/authValidator");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const { firstName, lastName, email, password } = req.body;
 
@@ -42,6 +47,10 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const { email, password } = req.body;
 

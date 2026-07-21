@@ -10,7 +10,7 @@ export default function Signup() {
   const { storeTokenInLS } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [payload, setPayload] = useState({
     firstName: "",
@@ -21,6 +21,10 @@ export default function Signup() {
 
   const handleChange = (e) => {
     setPayload({ ...payload, [e.target.name]: e.target.value });
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -45,6 +49,15 @@ export default function Signup() {
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Something went wrong!");
+      if (error.response?.data?.errors) {
+        const validationErrors = {};
+
+        error.response.data.errors.forEach((err) => {
+          validationErrors[err.path] = err.msg;
+        });
+
+        setErrors(validationErrors);
+      }
     } finally {
       setLoading(false);
     }
@@ -101,6 +114,11 @@ export default function Signup() {
                     value={payload.firstName}
                     onChange={handleChange}
                   />
+                  {errors.firstName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.firstName}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -114,6 +132,11 @@ export default function Signup() {
                     value={payload.lastName}
                     onChange={handleChange}
                   />
+                  {errors.lastName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.lastName}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -129,6 +152,9 @@ export default function Signup() {
                   value={payload.email}
                   onChange={handleChange}
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               {/* Password */}
@@ -159,6 +185,9 @@ export default function Signup() {
                     />
                   )}
                 </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
 
               {/* Button */}
