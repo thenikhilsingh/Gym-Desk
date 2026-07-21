@@ -1,11 +1,16 @@
-import React, { useState } from "react";
-import { Outlet } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Sidebar from "../components/Sidebar";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Admin() {
   const [openSidebar, setOpenSidebar] = useState(false);
+  const { isLoggedIn, user } = useContext(AuthContext);
 
+  if (!isLoggedIn && !user.is_admin) {
+    return <Navigate to="/" />;
+  }
   return (
     <div className="flex h-screen overflow-hidden bg-[#F6F8FC]">
       {/* Desktop Sidebar */}

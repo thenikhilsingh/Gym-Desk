@@ -7,6 +7,7 @@ export default function AuthProvider({ children }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const storeTokenInLS = (serverToken) => {
+    setToken(serverToken);
     return localStorage.setItem("token", serverToken);
   };
 
