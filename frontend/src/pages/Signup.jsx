@@ -3,6 +3,7 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Signup() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -33,6 +34,7 @@ export default function Signup() {
       if (response.status === 201) {
         storeTokenInLS(response.data.token);
         navigate("/");
+        toast.success(response?.data?.message || "Registeration Successfull!");
         setPayload({
           firstName: "",
           lastName: "",
@@ -42,6 +44,7 @@ export default function Signup() {
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }

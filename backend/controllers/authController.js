@@ -31,13 +31,13 @@ const register = async (req, res) => {
       },
     );
     return res.status(201).json({
-      msg: "Registeration Successfull!",
+      message: "Registeration Successfull!",
       token: generatedToken,
       userId: userCreated.id.toString(),
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -47,7 +47,7 @@ const login = async (req, res) => {
 
     const userExist = await getUserbyEmail(email);
     if (!userExist) {
-      return res.status(400).send({ msg: "Invalid Credentials!" });
+      return res.status(400).send({ message: "Invalid Credentials!" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, userExist.password);
@@ -71,14 +71,14 @@ const login = async (req, res) => {
     );
 
     return res.status(200).json({
-      msg: "Login Successfull!",
+      message: "Login Successfull!",
       token: generatedToken,
       userId: userExist.id.toString(),
       isAdmin: userExist.is_admin,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -88,7 +88,7 @@ const user = async (req, res) => {
     return res.status(200).json({ loggedInUser });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

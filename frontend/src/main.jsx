@@ -16,6 +16,8 @@ import Logout from "./components/Logout.jsx";
 import Error from "./pages/Error.jsx";
 import Admin from "./pages/Admin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,6 +45,16 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <RouterProvider router={router} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
     </AuthProvider>
   </StrictMode>,
 );
