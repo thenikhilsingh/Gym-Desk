@@ -3,12 +3,15 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { storeTokenInLS } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const [payload, setPayload] = useState({
     email: "",
     password: "",
@@ -16,10 +19,15 @@ export default function Login() {
 
   const handleChange = (e) => {
     setPayload({ ...payload, [e.target.name]: e.target.value });
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/auth/login`,
@@ -30,8 +38,10 @@ export default function Login() {
         storeTokenInLS(response.data.token);
         if (response.data.isAdmin) {
           navigate("/admin");
+          toast.success(response?.data?.message || "LogIn Successfull!");
         } else {
           navigate("/app");
+          toast.success(response?.data?.message || "LogIn Successfull!");
         }
         setPayload({
           email: "",
@@ -40,6 +50,16 @@ export default function Login() {
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+      if (error.response?.data?.errors) {
+        const validationErrors = {};
+        error.response.data.errors.forEach((err) => {
+          validationErrors[err.path] = err.msg;
+        });
+        setErrors(validationErrors);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,7 +107,6 @@ export default function Login() {
               {/* Email */}
               <div>
                 <label className="text-sm font-medium">Email Address</label>
-
                 <input
                   type="email"
                   placeholder="Enter your email"
@@ -96,6 +115,9 @@ export default function Login() {
                   value={payload.email}
                   onChange={handleChange}
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               {/* Password */}
@@ -135,14 +157,18 @@ export default function Login() {
                     />
                   )}
                 </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
 
               {/* Login Button */}
               <button
                 type="submit"
+                disabled={loading}
                 className="mt-2 h-12 w-full rounded-full bg-black text-sm font-medium text-white transition hover:bg-neutral-800 active:scale-[0.99]"
               >
-                Log In
+                {loading ? "Logging In..." : "Log In"}
               </button>
             </form>
           </div>
