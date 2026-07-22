@@ -16,6 +16,7 @@ export default function Plans() {
   const [openPlanModal, setOpenPlanModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [stats, setStats] = useState({});
   const [plans, setPlans] = useState([]);
 
   const closeModal = () => {
@@ -25,6 +26,15 @@ export default function Plans() {
     setOpenDeleteModal(false);
   };
 
+  const getStats = async () => {
+    try {
+      const response = await api.get("/api/plans/statsCount");
+      console.log(response.data.stats);
+      setStats(response.data.stats);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getPlans = async () => {
     try {
       const response = await api.get("/api/plans");
@@ -36,6 +46,7 @@ export default function Plans() {
   };
 
   useEffect(() => {
+    getStats();
     getPlans();
   }, []);
 
@@ -64,19 +75,21 @@ export default function Plans() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
         <div className="bg-white rounded-xl p-5 shadow">
           <BadgeCheck className="text-green-600 mb-3" size={28} />
-          <h2 className="text-3xl font-bold">4</h2>
+          <h2 className="text-3xl font-bold">{plans.length}</h2>
           <p className="text-gray-500">Total Plans</p>
         </div>
 
         <div className="bg-white rounded-xl p-5 shadow">
           <IndianRupee className="text-blue-600 mb-3" size={28} />
-          <h2 className="text-3xl font-bold">₹999</h2>
+          <h2 className="text-3xl font-bold">₹{stats.lowest_price}</h2>
           <p className="text-gray-500">Lowest Plan</p>
         </div>
 
         <div className="bg-white rounded-xl p-5 shadow">
           <Calendar className="text-orange-500 mb-3" size={28} />
-          <h2 className="text-3xl font-bold">12 Months</h2>
+          <h2 className="text-3xl font-bold">
+            {stats.longest_duration} Months
+          </h2>
           <p className="text-gray-500">Longest Duration</p>
         </div>
       </div>

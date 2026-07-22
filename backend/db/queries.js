@@ -38,10 +38,22 @@ const getAllPlans = async () => {
   return plans.rows;
 };
 
+const getPlanStats = async () => {
+  const result = await pool.query(`
+    SELECT
+      MIN(price) AS lowest_price,
+      MAX(duration) AS longest_duration
+    FROM plans;
+  `);
+
+  return result.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
   createUser,
   addPlan,
   getAllPlans,
+  getPlanStats,
 };

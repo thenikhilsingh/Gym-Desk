@@ -1,4 +1,4 @@
-const { addPlan, getAllPlans } = require("../db/queries");
+const { addPlan, getAllPlans, getPlanStats } = require("../db/queries");
 
 const createPlan = async (req, res) => {
   try {
@@ -37,4 +37,15 @@ const getPlans = async (req, res) => {
   }
 };
 
-module.exports = { createPlan, getPlans };
+const getStatsCardCount = async (req, res) => {
+  try {
+    const stats = await getPlanStats();
+    return res
+      .status(200)
+      .json({ message: "Stats fetched successfully", stats });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+};
+module.exports = { createPlan, getPlans, getStatsCardCount };
