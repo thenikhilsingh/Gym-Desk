@@ -4,6 +4,7 @@ const {
   getPlanStats,
   editPlanById,
   getPlanById,
+  updateIsActiveToggle,
 } = require("../db/queries");
 
 const createPlan = async (req, res) => {
@@ -94,10 +95,31 @@ const getPlan = async (req, res) => {
   }
 };
 
+const editActiveStatus = async (req, res) => {
+  try {
+    const { planId } = req.params;
+    const { isActive } = req.body;
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+
+    const updateStatus = await updateIsActiveToggle(planId, isActive);
+    return res
+      .status(200)
+      .json({ message: "isActive toggle updated successfully", updateStatus });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
 module.exports = {
   createPlan,
   getPlans,
   getStatsCardCount,
   updatePlan,
   getPlan,
+  editActiveStatus,
 };

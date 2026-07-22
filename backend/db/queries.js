@@ -79,6 +79,19 @@ const getPlanById = async (planId) => {
   return plan.rows[0];
 };
 
+const updateIsActiveToggle = async (planId, isActive) => {
+  const toggle = await pool.query(
+    `
+    UPDATE plans
+    SET is_active=$2
+    WHERE id=$1
+    RETURNING *
+    `,
+    [planId, isActive],
+  );
+  return toggle.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -88,4 +101,5 @@ module.exports = {
   getPlanStats,
   editPlanById,
   getPlanById,
+  updateIsActiveToggle,
 };

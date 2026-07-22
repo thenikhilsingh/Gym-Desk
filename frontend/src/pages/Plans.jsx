@@ -49,6 +49,31 @@ export default function Plans() {
     getPlans();
   }, []);
 
+  const updateIsActiveToggle = async (planId, isActive) => {
+    try {
+      const response = await api.patch(
+        `/api/plans/${planId}/updateActiveStatus`,
+        {
+          isActive: !isActive,
+        },
+      );
+      if (response.status === 200) {
+        setPlans((prev) =>
+          prev.map((plan) =>
+            plan.id === planId
+              ? {
+                  ...plan,
+                  is_active: response.data.updateStatus.is_active,
+                }
+              : plan,
+          ),
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Header */}
@@ -119,7 +144,9 @@ export default function Plans() {
                         type="checkbox"
                         checked={plan.is_active}
                         className="sr-only peer"
-                        // onChange={() => {}}
+                        onChange={() =>
+                          updateIsActiveToggle(plan.id, plan.is_active)
+                        }
                       />
 
                       <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-all"></div>
