@@ -49,6 +49,36 @@ const getPlanStats = async () => {
   return result.rows[0];
 };
 
+const editPlanById = async (
+  planId,
+  planName,
+  duration,
+  price,
+  description,
+  isActive,
+) => {
+  const update = await pool.query(
+    `
+    UPDATE plans
+    SET plan_name = COALESCE($2, plan_name),
+  duration = COALESCE($3, duration),
+  price = COALESCE($4, price),
+  description = COALESCE($5, description),
+  is_active = COALESCE($6, is_active),
+    updated_at = CURRENT_TIMESTAMP
+    WHERE id=$1
+    RETURNING *
+    `,
+    [planId, planName, duration, price, description, isActive],
+  );
+  return update.rows[0];
+};
+
+const getPlanById = async (planId) => {
+  const plan = await pool.query("SELECT * FROM plans WHERE id=$1", [planId]);
+  return plan.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -56,4 +86,6 @@ module.exports = {
   addPlan,
   getAllPlans,
   getPlanStats,
+  editPlanById,
+  getPlanById,
 };

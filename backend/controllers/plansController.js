@@ -1,4 +1,10 @@
-const { addPlan, getAllPlans, getPlanStats } = require("../db/queries");
+const {
+  addPlan,
+  getAllPlans,
+  getPlanStats,
+  editPlanById,
+  getPlanById,
+} = require("../db/queries");
 
 const createPlan = async (req, res) => {
   try {
@@ -48,4 +54,50 @@ const getStatsCardCount = async (req, res) => {
     return res.status(500).json({ message: "Internal Server error" });
   }
 };
-module.exports = { createPlan, getPlans, getStatsCardCount };
+
+const updatePlan = async (req, res) => {
+  try {
+    const { planName, duration, price, description, isActive } = req.body;
+    const { planId } = req.params;
+
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+
+    const updatedPlan = await editPlanById(
+      planId,
+      planName,
+      duration,
+      price,
+      description,
+      isActive,
+    );
+    return res
+      .status(200)
+      .json({ message: "plan updated successfully", updatedPlan });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
+const getPlan = async (req, res) => {
+  try {
+    const { planId } = req.params;
+    const plan = await getPlanById(planId);
+    return res.status(200).json({ message: "plan fetched successfully", plan });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
+module.exports = {
+  createPlan,
+  getPlans,
+  getStatsCardCount,
+  updatePlan,
+  getPlan,
+};

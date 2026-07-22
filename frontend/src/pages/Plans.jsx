@@ -18,6 +18,7 @@ export default function Plans() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [stats, setStats] = useState({});
   const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState();
 
   const closeModal = () => {
     setOpenPlanModal(false);
@@ -29,7 +30,6 @@ export default function Plans() {
   const getStats = async () => {
     try {
       const response = await api.get("/api/plans/statsCount");
-      console.log(response.data.stats);
       setStats(response.data.stats);
     } catch (error) {
       console.log(error);
@@ -38,7 +38,6 @@ export default function Plans() {
   const getPlans = async () => {
     try {
       const response = await api.get("/api/plans");
-      console.log(response.data.plans);
       setPlans(response.data.plans);
     } catch (error) {
       console.log(error);
@@ -133,6 +132,7 @@ export default function Plans() {
                       <button
                         onClick={() => {
                           setIsEdit(true);
+                          setSelectedPlan(plan.id);
                           setOpenPlanModal(true);
                         }}
                         className="text-blue-600 hover:text-blue-800"
@@ -160,6 +160,8 @@ export default function Plans() {
         openPlanModal={openPlanModal}
         closeModal={closeModal}
         isEdit={isEdit}
+        selectedPlan={selectedPlan}
+        getPlans={getPlans}
       />
       <DeletePlanModal
         openDeleteModal={openDeleteModal}

@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import useAxios from "../hooks/useAxios";
 import { toast } from "react-toastify";
 
-export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
+export default function PlanModal({
+  openPlanModal,
+  closeModal,
+  isEdit,
+  selectedPlan,
+  getPlans,
+}) {
   const api = useAxios();
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState({
@@ -31,7 +37,17 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
     setLoading(true);
     try {
       if (isEdit) {
-        console.log("Edit");
+        const response = await api.patch(
+          `/api/plans/edit/${selectedPlan}`,
+          payload,
+        );
+        if (response.status === 200) {
+          getPlans();
+          closeModal();
+          toast.success(
+            response?.data?.message || "Plan updated Successfully!",
+          );
+        }
       } else {
         const response = await api.post("/api/plans/create", payload);
         if (response.status === 201) {
@@ -66,6 +82,30 @@ export default function PlanModal({ openPlanModal, closeModal, isEdit }) {
     });
     closeModal();
   };
+
+  const getSelectPlanDetails = async () => {
+    try {
+      const response = await api.get(`/api/plans/${selectedPlan}`);
+      const plan = response.data.plan;
+      console.log(plan, "plan");
+
+      setPayload({
+        planName: plan.plan_name,
+        duration: plan.duration,
+        price: plan.price,
+        description: plan.description,
+        isActive: plan.is_active,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (openPlanModal && isEdit && selectedPlan) {
+      getSelectPlanDetails();
+    }
+  }, [openPlanModal, isEdit, selectedPlan]);
 
   if (!openPlanModal) return null;
 
