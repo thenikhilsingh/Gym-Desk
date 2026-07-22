@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Plus,
   BadgeCheck,
@@ -9,11 +9,14 @@ import {
 } from "lucide-react";
 import PlanModal from "../components/PlanModal";
 import DeletePlanModal from "../components/DeletePlanModal";
+import useAxios from "../hooks/useAxios";
 
 export default function Plans() {
+  const api = useAxios();
   const [openPlanModal, setOpenPlanModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [plans, setPlans] = useState([]);
 
   const closeModal = () => {
     setOpenPlanModal(false);
@@ -21,6 +24,20 @@ export default function Plans() {
   const closeDeleteModal = () => {
     setOpenDeleteModal(false);
   };
+
+  const getPlans = async () => {
+    try {
+      const response = await api.get("/api/plans");
+      console.log(response.data.plans);
+      setPlans(response.data.plans);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getPlans();
+  }, []);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -78,47 +95,51 @@ export default function Plans() {
           </thead>
 
           <tbody>
-            <tr className="border-b hover:bg-gray-50">
-              <td className="p-4 font-medium">Quarterly Plan</td>
-              <td className="p-4">3 Months</td>
-              <td className="p-4">₹2499</td>
-              <td className="p-4">
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="sr-only peer"
-                    // onChange={() => {}}
-                  />
+            {plans.map((plan) => {
+              return (
+                <tr key={plan.id} className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">{plan.plan_name}</td>
+                  <td className="p-4">{plan.duration} Months</td>
+                  <td className="p-4">₹{plan.price}</td>
+                  <td className="p-4">
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={plan.is_active}
+                        className="sr-only peer"
+                        // onChange={() => {}}
+                      />
 
-                  <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-all"></div>
+                      <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-all"></div>
 
-                  <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5"></div>
-                </label>
-              </td>
-              <td className="p-4">
-                <div className="flex justify-center gap-3">
-                  <button
-                    onClick={() => {
-                      setIsEdit(true);
-                      setOpenPlanModal(true);
-                    }}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <Pencil size={18} />
-                  </button>
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5"></div>
+                    </label>
+                  </td>
+                  <td className="p-4">
+                    <div className="flex justify-center gap-3">
+                      <button
+                        onClick={() => {
+                          setIsEdit(true);
+                          setOpenPlanModal(true);
+                        }}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <Pencil size={18} />
+                      </button>
 
-                  <button
-                    onClick={() => {
-                      setOpenDeleteModal(true);
-                    }}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </td>
-            </tr>
+                      <button
+                        onClick={() => {
+                          setOpenDeleteModal(true);
+                        }}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

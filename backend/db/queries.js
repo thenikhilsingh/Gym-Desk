@@ -33,9 +33,15 @@ const addPlan = async (planName, duration, price, description, isActive) => {
   return create.rows[0];
 };
 
+const getAllPlans = async () => {
+  const plans = await pool.query("SELECT * FROM plans");
+  return plans.rows;
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
   createUser,
   addPlan,
+  getAllPlans,
 };
