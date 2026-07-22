@@ -1,12 +1,87 @@
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
+import useAxios from "../hooks/useAxios";
+import { toast } from "react-toastify";
 
-export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
+export default function MemberModal({
+  openMemberModal,
+  closeModal,
+  isEdit,
+  getMembers,
+}) {
+  const api = useAxios();
+  const [payload, setPayload] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    gender: "",
+    dob: "",
+    address: "",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    joinDate: "",
+    height: "",
+    weight: "",
+    profileImage: "",
+  });
+
+  const handleChange = (e) => {
+    setPayload({
+      ...payload,
+      [e.target.name]:
+        e.target.type === "number"
+          ? e.target.value === ""
+            ? ""
+            : Number(e.target.value)
+          : e.target.type === "file"
+            ? e.target.files[0]
+            : e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (isEdit) {
+        console.log("edit");
+      } else {
+        const response = await api.post("/api/members/add", payload);
+        if (response.status === 201) {
+          getMembers();
+          closeModal();
+          toast.success(
+            response?.data?.message || "Member added Successfully!",
+          );
+          setPayload({
+            firstName: "",
+            lastName: "",
+            phone: "",
+            gender: "",
+            dob: "",
+            address: "",
+            emergencyContactName: "",
+            emergencyContactPhone: "",
+            joinDate: "",
+            height: "",
+            weight: "",
+            profileImage: "",
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+    }
+  };
+
   if (!openMemberModal) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b px-6 py-4">
           <h2 className="text-2xl font-bold">
@@ -31,6 +106,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
               type="text"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
               placeholder="Enter first name"
+              name="firstName"
+              value={payload.firstName}
+              onChange={handleChange}
             />
           </div>
 
@@ -42,6 +120,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
               type="text"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
               placeholder="Enter last name"
+              name="lastName"
+              value={payload.lastName}
+              onChange={handleChange}
             />
           </div>
 
@@ -53,6 +134,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
               type="text"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
               placeholder="9876543210"
+              name="phone"
+              value={payload.phone}
+              onChange={handleChange}
             />
           </div>
 
@@ -60,11 +144,16 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
           <div>
             <label className="block mb-2 font-medium">Gender</label>
 
-            <select className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black">
+            <select
+              name="gender"
+              value={payload.gender}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+            >
               <option value="">Select Gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
@@ -75,6 +164,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
             <input
               type="date"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+              name="dob"
+              value={payload.dob}
+              onChange={handleChange}
             />
           </div>
 
@@ -85,6 +177,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
             <input
               type="date"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+              name="joinDate"
+              value={payload.joinDate}
+              onChange={handleChange}
             />
           </div>
 
@@ -95,6 +190,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
             <input
               type="number"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+              name="height"
+              value={payload.height}
+              onChange={handleChange}
             />
           </div>
 
@@ -105,6 +203,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
             <input
               type="number"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+              name="weight"
+              value={payload.weight}
+              onChange={handleChange}
             />
           </div>
 
@@ -117,6 +218,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
             <input
               type="text"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+              name="emergencyContactName"
+              value={payload.emergencyContactName}
+              onChange={handleChange}
             />
           </div>
 
@@ -129,6 +233,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
             <input
               type="text"
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+              name="emergencyContactPhone"
+              value={payload.emergencyContactPhone}
+              onChange={handleChange}
             />
           </div>
 
@@ -140,6 +247,9 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
               rows={3}
               className="w-full border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-black resize-none"
               placeholder="Enter address"
+              name="address"
+              value={payload.address}
+              onChange={handleChange}
             />
           </div>
 
@@ -147,24 +257,34 @@ export default function MemberModal({ openMemberModal, closeModal, isEdit }) {
           <div className="md:col-span-2">
             <label className="block mb-2 font-medium">Profile Image</label>
 
-            <input type="file" className="w-full border rounded-lg px-4 py-2" />
+            <input
+              type="file"
+              className="w-full border rounded-lg px-4 py-2"
+              name="profileImage"
+              accept="image/*"
+              onChange={handleChange}
+            />
           </div>
         </div>
 
         {/* Footer */}
         <div className="border-t px-6 py-4 flex justify-end gap-3">
           <button
+            type="button"
             onClick={closeModal}
             className="px-5 py-2 rounded-lg border hover:bg-gray-100"
           >
             Cancel
           </button>
 
-          <button className="px-5 py-2 rounded-lg bg-black text-white hover:bg-gray-800">
+          <button
+            type="submit"
+            className="px-5 py-2 rounded-lg bg-black text-white hover:bg-gray-800"
+          >
             {isEdit ? "Update Member" : "Add Member"}
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

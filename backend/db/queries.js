@@ -105,6 +105,44 @@ const getMembers = async () => {
   return members.rows;
 };
 
+const createMember = async (
+  firstName,
+  lastName,
+  phone,
+  gender,
+  dob,
+  address,
+  emergencyContactName,
+  emergencyContactPhone,
+  joinDate,
+  height,
+  weight,
+  profileImage,
+) => {
+  const member = await pool.query(
+    `
+     INSERT INTO members (first_name, last_name, phone, gender, date_of_birth, address,emergency_contact_name, emergency_contact_phone, join_date, height, weight, profile_image)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+    RETURNING *
+    `,
+    [
+      firstName,
+      lastName,
+      phone,
+      gender,
+      dob,
+      address,
+      emergencyContactName,
+      emergencyContactPhone,
+      joinDate,
+      height,
+      weight,
+      profileImage,
+    ],
+  );
+  return member.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -117,4 +155,5 @@ module.exports = {
   updateIsActiveToggle,
   deletePlanById,
   getMembers,
+  createMember,
 };

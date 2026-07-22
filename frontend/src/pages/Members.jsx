@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Plus, Users, UserCheck, UserX, Pencil, Trash2 } from "lucide-react";
 import MemberModal from "../components/MemberModal";
 import useAxios from "../hooks/useAxios";
+import useFormatDate from "../hooks/useFormatDate";
 
 export default function Members() {
   const api = useAxios();
+  const { formatDate } = useFormatDate();
   const [openMemberModal, setOpenMemberModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -100,8 +102,8 @@ export default function Members() {
                       <tr key={member.id} className="border-b hover:bg-gray-50">
                         <td className="p-4 font-medium">{`${member.first_name} ${member.last_name}`}</td>
                         <td className="p-4">{member.phone}</td>
-                        <td className="p-4">₹{member.gender}</td>
-                        <td className="p-4">₹{member.join_date}</td>
+                        <td className="p-4">{member.gender}</td>
+                        <td className="p-4">{formatDate(member.join_date)}</td>
                         <td className="p-4">
                           <div className="flex justify-center gap-3">
                             <button
@@ -140,6 +142,7 @@ export default function Members() {
         closeModal={closeModal}
         isEdit={isEdit}
         selectedMember={selectedMember}
+        getMembers={getMembers}
       />
     </div>
   );
