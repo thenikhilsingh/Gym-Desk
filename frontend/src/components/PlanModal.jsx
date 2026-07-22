@@ -51,6 +51,7 @@ export default function PlanModal({
       } else {
         const response = await api.post("/api/plans/create", payload);
         if (response.status === 201) {
+          getPlans();
           closeModal();
           toast.success(
             response?.data?.message || "Plan created Successfully!",
@@ -87,7 +88,6 @@ export default function PlanModal({
     try {
       const response = await api.get(`/api/plans/${selectedPlan}`);
       const plan = response.data.plan;
-      console.log(plan, "plan");
 
       setPayload({
         planName: plan.plan_name,

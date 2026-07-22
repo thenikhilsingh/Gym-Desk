@@ -92,6 +92,14 @@ const updateIsActiveToggle = async (planId, isActive) => {
   return toggle.rows[0];
 };
 
+const deletePlanById = async (planId) => {
+  const deletePlan = await pool.query(
+    "DELETE FROM plans WHERE id=$1 RETURNING *",
+    [planId],
+  );
+  return deletePlan.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -102,4 +110,5 @@ module.exports = {
   editPlanById,
   getPlanById,
   updateIsActiveToggle,
+  deletePlanById,
 };

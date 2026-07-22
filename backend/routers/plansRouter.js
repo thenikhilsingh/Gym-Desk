@@ -7,6 +7,7 @@ const {
   updatePlan,
   getPlan,
   editActiveStatus,
+  deletePlan,
 } = require("../controllers/plansController");
 
 const plansRouter = Router();
@@ -21,5 +22,6 @@ plansRouter.patch(
   authMiddleware,
   editActiveStatus,
 );
+plansRouter.delete("/delete/:planId", authMiddleware, deletePlan);
 
 module.exports = plansRouter;

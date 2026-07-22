@@ -5,6 +5,7 @@ const {
   editPlanById,
   getPlanById,
   updateIsActiveToggle,
+  deletePlanById,
 } = require("../db/queries");
 
 const createPlan = async (req, res) => {
@@ -115,6 +116,25 @@ const editActiveStatus = async (req, res) => {
   }
 };
 
+const deletePlan = async (req, res) => {
+  try {
+    const { planId } = req.params;
+
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+    const deletedPlan = await deletePlanById(planId);
+    return res
+      .status(200)
+      .json({ message: "plan deleted successfully", deletedPlan });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server error" });
+  }
+};
+
 module.exports = {
   createPlan,
   getPlans,
@@ -122,4 +142,5 @@ module.exports = {
   updatePlan,
   getPlan,
   editActiveStatus,
+  deletePlan,
 };

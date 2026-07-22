@@ -132,54 +132,63 @@ export default function Plans() {
           </thead>
 
           <tbody>
-            {plans.map((plan) => {
-              return (
-                <tr key={plan.id} className="border-b hover:bg-gray-50">
-                  <td className="p-4 font-medium">{plan.plan_name}</td>
-                  <td className="p-4">{plan.duration} Months</td>
-                  <td className="p-4">₹{plan.price}</td>
-                  <td className="p-4">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={plan.is_active}
-                        className="sr-only peer"
-                        onChange={() =>
-                          updateIsActiveToggle(plan.id, plan.is_active)
-                        }
-                      />
+            {!plans.length ? (
+              <tr className="border-b hover:bg-gray-50">
+                <td colSpan={5} className="text-center py-8 font-medium ">
+                  No plan found
+                </td>
+              </tr>
+            ) : (
+              plans.map((plan) => {
+                return (
+                  <tr key={plan.id} className="border-b hover:bg-gray-50">
+                    <td className="p-4 font-medium">{plan.plan_name}</td>
+                    <td className="p-4">{plan.duration} Months</td>
+                    <td className="p-4">₹{plan.price}</td>
+                    <td className="p-4">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={plan.is_active}
+                          className="sr-only peer"
+                          onChange={() =>
+                            updateIsActiveToggle(plan.id, plan.is_active)
+                          }
+                        />
 
-                      <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-all"></div>
+                        <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-all"></div>
 
-                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5"></div>
-                    </label>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex justify-center gap-3">
-                      <button
-                        onClick={() => {
-                          setIsEdit(true);
-                          setSelectedPlan(plan.id);
-                          setOpenPlanModal(true);
-                        }}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <Pencil size={18} />
-                      </button>
+                        <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5"></div>
+                      </label>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex justify-center gap-3">
+                        <button
+                          onClick={() => {
+                            setIsEdit(true);
+                            setSelectedPlan(plan.id);
+                            setOpenPlanModal(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <Pencil size={18} />
+                        </button>
 
-                      <button
-                        onClick={() => {
-                          setOpenDeleteModal(true);
-                        }}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                        <button
+                          onClick={() => {
+                            setSelectedPlan(plan.id);
+                            setOpenDeleteModal(true);
+                          }}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
@@ -193,8 +202,8 @@ export default function Plans() {
       <DeletePlanModal
         openDeleteModal={openDeleteModal}
         closeModal={closeDeleteModal}
-        // onDelete={}
-        // planName={}
+        selectedPlan={selectedPlan}
+        getPlans={getPlans}
       />
     </div>
   );

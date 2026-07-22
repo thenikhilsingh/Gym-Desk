@@ -1,12 +1,46 @@
 import React from "react";
 import { TriangleAlert, X } from "lucide-react";
+import useAxios from "../hooks/useAxios";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 export default function DeletePlanModal({
   openDeleteModal,
   closeModal,
-  onDelete,
-  planName,
+  selectedPlan,
+  getPlans,
 }) {
+  const api = useAxios();
+  const [planName, setPlanName] = useState("");
+  const getSelectPlanDetails = async () => {
+    try {
+      const response = await api.get(`/api/plans/${selectedPlan}`);
+      setPlanName(response.data.plan.plan_name);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (openDeleteModal && selectedPlan) {
+      getSelectPlanDetails();
+    }
+  }, [openDeleteModal, selectedPlan]);
+
+  const handleDelete = async () => {
+    try {
+      const response = await api.delete(`/api/plans/delete/${selectedPlan}`);
+      if (response.status === 200) {
+        getPlans();
+        closeModal();
+        toast.success(response?.data?.message || "Plan deleted Successfully!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+    }
+  };
   if (!openDeleteModal) return null;
 
   return (
@@ -31,7 +65,7 @@ export default function DeletePlanModal({
           </div>
 
           <h3 className="text-lg font-semibold">
-            Are you sure you want to delete this plan?
+            Are you sure you want to delete {planName || "this plan"}?
           </h3>
 
           <p className="mt-2 text-gray-500">
@@ -53,7 +87,7 @@ export default function DeletePlanModal({
           </button>
 
           <button
-            onClick={onDelete}
+            onClick={handleDelete}
             className="rounded-lg bg-red-600 px-5 py-2.5 text-white hover:bg-red-700"
           >
             Delete Plan
