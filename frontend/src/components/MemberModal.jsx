@@ -22,7 +22,7 @@ export default function MemberModal({
     joinDate: "",
     height: "",
     weight: "",
-    profileImage: "",
+    profileImage: null,
   });
 
   const handleChange = (e) => {
@@ -45,7 +45,22 @@ export default function MemberModal({
       if (isEdit) {
         console.log("edit");
       } else {
-        const response = await api.post("/api/members/add", payload);
+        const formData = new FormData();
+
+        formData.append("firstName", payload.firstName);
+        formData.append("lastName", payload.lastName);
+        formData.append("phone", payload.phone);
+        formData.append("gender", payload.gender);
+        formData.append("dob", payload.dob);
+        formData.append("address", payload.address);
+        formData.append("emergencyContactName", payload.emergencyContactName);
+        formData.append("emergencyContactPhone", payload.emergencyContactPhone);
+        formData.append("joinDate", payload.joinDate);
+        formData.append("height", payload.height);
+        formData.append("weight", payload.weight);
+        formData.append("profileImage", payload.profileImage);
+
+        const response = await api.post("/api/members/add", formData);
         if (response.status === 201) {
           getMembers();
           closeModal();
@@ -64,7 +79,7 @@ export default function MemberModal({
             joinDate: "",
             height: "",
             weight: "",
-            profileImage: "",
+            profileImage: null,
           });
         }
       }

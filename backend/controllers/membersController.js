@@ -1,4 +1,5 @@
 const { getMembers, createMember } = require("../db/queries");
+const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
 const getAllMembers = async (req, res) => {
   try {
@@ -26,7 +27,6 @@ const addMember = async (req, res) => {
       joinDate,
       height,
       weight,
-      profileImage,
     } = req.body;
 
     if (!req.user.is_admin) {
@@ -34,6 +34,22 @@ const addMember = async (req, res) => {
         message: "Only admins are allowed.",
       });
     }
+    const localPath = req.file?.path;
+    if (!localPath) {
+      return res.status(400).json({
+        message: "Please upload a file",
+      });
+    }
+
+    const uploadedFile = await uploadOnCloudinary(localPath);
+    if (!uploadedFile) {
+      return res.status(400).json({
+        message: "Upload failed",
+      });
+    }
+
+    const profileImageURL = uploadedFile.secure_url;
+    const profileImagePublicId = uploadedFile.public_id;
 
     const member = await createMember(
       firstName,
@@ -47,7 +63,8 @@ const addMember = async (req, res) => {
       joinDate,
       height,
       weight,
-      profileImage,
+      profileImageURL,
+      profileImagePublicId,
     );
 
     return res
