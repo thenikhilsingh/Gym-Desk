@@ -4,13 +4,13 @@ import {
   Dumbbell,
   LayoutDashboard,
   Users,
-  BadgeIndianRupee,
+  // BadgeIndianRupee,
   CreditCard,
-  CalendarCheck2,
-  UserCog,
-  BarChart3,
-  Bell,
-  Settings,
+  // CalendarCheck2,
+  // UserCog,
+  // BarChart3,
+  // Bell,
+  // Settings,
   LogOutIcon,
 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
@@ -25,6 +25,11 @@ const menuItems = [
     title: "Plans",
     icon: <CreditCard size={20} />,
     path: "/admin/plans",
+  },
+  {
+    title: "Members",
+    icon: <Users size={20} />,
+    path: "/admin/members",
   },
 ];
 

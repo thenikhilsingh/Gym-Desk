@@ -100,6 +100,11 @@ const deletePlanById = async (planId) => {
   return deletePlan.rows[0];
 };
 
+const getMembers = async () => {
+  const members = await pool.query("SELECT * FROM members");
+  return members.rows;
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -111,4 +116,5 @@ module.exports = {
   getPlanById,
   updateIsActiveToggle,
   deletePlanById,
+  getMembers,
 };
