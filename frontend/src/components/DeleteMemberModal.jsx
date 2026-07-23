@@ -11,6 +11,7 @@ export default function DeleteMemberModal({
 }) {
   const api = useAxios();
   const [memberName, setMemberName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const getSelectedMemberDetails = async () => {
     try {
@@ -31,6 +32,7 @@ export default function DeleteMemberModal({
   }, [openDeleteModal, selectedMember]);
 
   const handleDelete = async () => {
+    setLoading(true);
     try {
       const response = await api.delete(
         `/api/members/delete/${selectedMember}`,
@@ -46,6 +48,8 @@ export default function DeleteMemberModal({
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,9 +100,10 @@ export default function DeleteMemberModal({
 
           <button
             onClick={handleDelete}
+            disabled={loading}
             className="rounded-lg bg-red-600 px-5 py-2.5 text-white hover:bg-red-700"
           >
-            Delete Member
+            {loading ? "deleting..." : "Delete Member"}
           </button>
         </div>
       </div>

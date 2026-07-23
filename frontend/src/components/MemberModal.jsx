@@ -28,6 +28,7 @@ export default function MemberModal({
     profileImage: null,
   });
   const [memberDetails, setMemberDetails] = useState({});
+  const [loading, setLoading] = useState(false);
   const handleClose = () => {
     closeModal();
     setPayload({
@@ -91,6 +92,7 @@ export default function MemberModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("firstName", payload.firstName);
@@ -132,6 +134,8 @@ export default function MemberModal({
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -353,9 +357,16 @@ export default function MemberModal({
 
           <button
             type="submit"
+            disabled={loading}
             className="px-5 py-2 rounded-lg bg-black text-white hover:bg-gray-800"
           >
-            {isEdit ? "Update Member" : "Add Member"}
+            {loading
+              ? isEdit
+                ? "Updating..."
+                : "Adding..."
+              : isEdit
+                ? "Update Member"
+                : "Add Member"}
           </button>
         </div>
       </form>
