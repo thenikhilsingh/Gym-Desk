@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Users, UserCheck, UserX, Pencil, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Users,
+  UserCheck,
+  UserX,
+  Pencil,
+  Trash2,
+  Eye,
+} from "lucide-react";
 import MemberModal from "../components/MemberModal";
 import useAxios from "../hooks/useAxios";
 import useFormatDate from "../hooks/useFormatDate";
 import DeleteMemberModal from "../components/DeleteMemberModal";
+import ViewMemberModal from "../components/ViewMemberModal";
 
 export default function Members() {
   const api = useAxios();
   const { formatDate } = useFormatDate();
   const [openMemberModal, setOpenMemberModal] = useState(false);
+  const [openViewModal, setOpenViewModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -122,6 +132,16 @@ export default function Members() {
                             <button
                               onClick={() => {
                                 setSelectedMember(member.id);
+                                setOpenViewModal(true);
+                              }}
+                              className="text-gray-600 hover:text-black"
+                            >
+                              <Eye size={18} />
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setSelectedMember(member.id);
                                 setOpenDeleteModal(true);
                               }}
                               className="text-red-600 hover:text-red-800"
@@ -145,6 +165,11 @@ export default function Members() {
         isEdit={isEdit}
         selectedMember={selectedMember}
         getMembers={getMembers}
+      />
+      <ViewMemberModal
+        openViewModal={openViewModal}
+        closeModal={() => setOpenViewModal(false)}
+        selectedMember={selectedMember}
       />
       <DeleteMemberModal
         openDeleteModal={openDeleteModal}
