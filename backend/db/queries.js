@@ -145,6 +145,67 @@ const createMember = async (
   return member.rows[0];
 };
 
+const updateMemberById = async (
+  memberId,
+  firstName,
+  lastName,
+  phone,
+  gender,
+  dob,
+  address,
+  emergencyContactName,
+  emergencyContactPhone,
+  joinDate,
+  height,
+  weight,
+  profileImageURL,
+  profileImagePublicId,
+) => {
+  const updatedMember = await pool.query(
+    `
+    UPDATE members
+    SET first_name = COALESCE($2, first_name),
+last_name = COALESCE($3, last_name),
+phone = COALESCE($4, phone),
+gender = COALESCE($5, gender),
+date_of_birth = COALESCE($6, date_of_birth),
+address = COALESCE($7, address),
+emergency_contact_name = COALESCE($8, emergency_contact_name),
+emergency_contact_phone = COALESCE($9, emergency_contact_phone),
+join_date = COALESCE($10, join_date),
+height = COALESCE($11, height),
+weight = COALESCE($12, weight),
+profile_image_url = COALESCE($13, profile_image_url),
+profile_image_public_id = COALESCE($14, profile_image_public_id)
+WHERE id=$1 RETURNING *
+    `,
+    [
+      memberId,
+      firstName,
+      lastName,
+      phone,
+      gender,
+      dob,
+      address,
+      emergencyContactName,
+      emergencyContactPhone,
+      joinDate,
+      height,
+      weight,
+      profileImageURL,
+      profileImagePublicId,
+    ],
+  );
+  return updatedMember.rows[0];
+};
+
+const getMemberById = async (memberId) => {
+  const member = await pool.query("SELECT * FROM members WHERE id=$1", [
+    memberId,
+  ]);
+  return member.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -158,4 +219,6 @@ module.exports = {
   deletePlanById,
   getMembers,
   createMember,
+  updateMemberById,
+  getMemberById,
 };

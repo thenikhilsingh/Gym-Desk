@@ -3,6 +3,8 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const {
   getAllMembers,
   addMember,
+  editMember,
+  getMemberDetails,
 } = require("../controllers/membersController");
 const upload = require("../middlewares/multerMiddleware");
 
@@ -15,5 +17,12 @@ membersRouter.post(
   upload.single("profileImage"),
   addMember,
 );
+membersRouter.patch(
+  "/edit/:memberId",
+  authMiddleware,
+  upload.single("profileImage"),
+  editMember,
+);
+membersRouter.get("/:memberId", authMiddleware, getMemberDetails);
 
 module.exports = membersRouter;

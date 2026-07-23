@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import useAxios from "../hooks/useAxios";
 import { toast } from "react-toastify";
+import useFormatDate from "../hooks/useFormatDate";
 
 export default function MemberModal({
   openMemberModal,
   closeModal,
   isEdit,
   getMembers,
+  selectedMember,
 }) {
   const api = useAxios();
+  const { formatDate } = useFormatDate();
   const [payload, setPayload] = useState({
     firstName: "",
     lastName: "",
@@ -24,6 +27,53 @@ export default function MemberModal({
     weight: "",
     profileImage: null,
   });
+  const [memberDetails, setMemberDetails] = useState({});
+  const handleClose = () => {
+    closeModal();
+    setPayload({
+      firstName: "",
+      lastName: "",
+      phone: "",
+      gender: "",
+      dob: "",
+      address: "",
+      emergencyContactName: "",
+      emergencyContactPhone: "",
+      joinDate: "",
+      height: "",
+      weight: "",
+      profileImage: null,
+    });
+  };
+  const getMemberDetails = async () => {
+    try {
+      const response = await api.get(`/api/members/${selectedMember}`);
+      const member = response.data.member;
+      setMemberDetails(member);
+      setPayload({
+        ...payload,
+        firstName: member.first_name,
+        lastName: member.last_name,
+        phone: member.phone,
+        gender: member.gender,
+        dob: formatDate(member.date_of_birth, "input"),
+        address: member.address,
+        emergencyContactName: member.emergency_contact_name,
+        emergencyContactPhone: member.emergency_contact_phone,
+        joinDate: formatDate(member.join_date, "input"),
+        height: member.height,
+        weight: member.weight,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isEdit && openMemberModal && selectedMember) {
+      getMemberDetails();
+    }
+  }, [isEdit, openMemberModal, selectedMember]);
 
   const handleChange = (e) => {
     setPayload({
@@ -42,45 +92,41 @@ export default function MemberModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (isEdit) {
-        console.log("edit");
-      } else {
-        const formData = new FormData();
-
-        formData.append("firstName", payload.firstName);
-        formData.append("lastName", payload.lastName);
-        formData.append("phone", payload.phone);
-        formData.append("gender", payload.gender);
-        formData.append("dob", payload.dob);
-        formData.append("address", payload.address);
-        formData.append("emergencyContactName", payload.emergencyContactName);
-        formData.append("emergencyContactPhone", payload.emergencyContactPhone);
-        formData.append("joinDate", payload.joinDate);
-        formData.append("height", payload.height);
-        formData.append("weight", payload.weight);
+      const formData = new FormData();
+      formData.append("firstName", payload.firstName);
+      formData.append("lastName", payload.lastName);
+      formData.append("phone", payload.phone);
+      formData.append("gender", payload.gender);
+      formData.append("dob", payload.dob);
+      formData.append("address", payload.address);
+      formData.append("emergencyContactName", payload.emergencyContactName);
+      formData.append("emergencyContactPhone", payload.emergencyContactPhone);
+      formData.append("joinDate", payload.joinDate);
+      formData.append("height", payload.height);
+      formData.append("weight", payload.weight);
+      if (payload.profileImage) {
         formData.append("profileImage", payload.profileImage);
-
+      }
+      if (isEdit) {
+        const response = await api.patch(
+          `/api/members/edit/${selectedMember}`,
+          formData,
+        );
+        if (response.status === 200) {
+          getMembers();
+          handleClose();
+          toast.success(
+            response?.data?.message || "Member updated Successfully!",
+          );
+        }
+      } else {
         const response = await api.post("/api/members/add", formData);
         if (response.status === 201) {
           getMembers();
-          closeModal();
+          handleClose();
           toast.success(
             response?.data?.message || "Member added Successfully!",
           );
-          setPayload({
-            firstName: "",
-            lastName: "",
-            phone: "",
-            gender: "",
-            dob: "",
-            address: "",
-            emergencyContactName: "",
-            emergencyContactPhone: "",
-            joinDate: "",
-            height: "",
-            weight: "",
-            profileImage: null,
-          });
         }
       }
     } catch (error) {
@@ -104,7 +150,7 @@ export default function MemberModal({
           </h2>
 
           <button
-            onClick={closeModal}
+            onClick={handleClose}
             className="p-2 rounded-lg hover:bg-gray-100"
           >
             <X size={20} />
@@ -268,6 +314,19 @@ export default function MemberModal({
             />
           </div>
 
+          {/* img preview */}
+          {isEdit && memberDetails.profile_image_url && (
+            <div className="mb-3">
+              <p className="text-sm font-medium mb-2">Current Image</p>
+
+              <img
+                src={memberDetails.profile_image_url}
+                alt="Profile"
+                className="w-24 h-24 rounded-full object-cover border"
+              />
+            </div>
+          )}
+
           {/* Profile Image */}
           <div className="md:col-span-2">
             <label className="block mb-2 font-medium">Profile Image</label>
@@ -286,7 +345,7 @@ export default function MemberModal({
         <div className="border-t px-6 py-4 flex justify-end gap-3">
           <button
             type="button"
-            onClick={closeModal}
+            onClick={handleClose}
             className="px-5 py-2 rounded-lg border hover:bg-gray-100"
           >
             Cancel
