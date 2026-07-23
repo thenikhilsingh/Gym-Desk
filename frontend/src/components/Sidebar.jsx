@@ -31,6 +31,11 @@ const menuItems = [
     icon: <Users size={20} />,
     path: "/admin/members",
   },
+  {
+    title: "Memberships",
+    icon: <Users size={20} />,
+    path: "/admin/memberships",
+  },
 ];
 
 export default function Sidebar() {
