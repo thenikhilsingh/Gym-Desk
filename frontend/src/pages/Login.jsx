@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 export default function Login() {
   const navigate = useNavigate();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const { storeTokenInLS } = useContext(AuthContext);
+  const { storeTokenInLS, isLoggedIn, user } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -63,6 +63,13 @@ export default function Login() {
     }
   };
 
+  if (isLoggedIn && user.is_admin) {
+    return <Navigate to="/admin" />;
+  }
+
+  if (isLoggedIn && !user.is_admin) {
+    return <Navigate to="/app" />;
+  }
   return (
     <div className="min-h-screen bg-[#7F88A2] flex items-center justify-center p-6">
       <div className="w-full max-w-6xl overflow-hidden rounded-[36px] bg-white p-3 shadow-[0_30px_80px_rgba(0,0,0,0.15)]">
