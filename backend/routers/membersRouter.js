@@ -5,6 +5,7 @@ const {
   addMember,
   editMember,
   getMemberDetails,
+  deleteMember,
 } = require("../controllers/membersController");
 const upload = require("../middlewares/multerMiddleware");
 
@@ -24,5 +25,6 @@ membersRouter.patch(
   editMember,
 );
 membersRouter.get("/:memberId", authMiddleware, getMemberDetails);
+membersRouter.delete("/delete/:memberId", authMiddleware, deleteMember);
 
 module.exports = membersRouter;

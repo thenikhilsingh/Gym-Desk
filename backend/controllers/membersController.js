@@ -3,6 +3,7 @@ const {
   createMember,
   updateMemberById,
   getMemberById,
+  deleteMemberById,
 } = require("../db/queries");
 const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
@@ -168,4 +169,38 @@ const getMemberDetails = async (req, res) => {
   }
 };
 
-module.exports = { getAllMembers, addMember, editMember, getMemberDetails };
+const deleteMember = async (req, res) => {
+  try {
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+    const { memberId } = req.params;
+    const member = await getMemberById(memberId);
+    if (!member) {
+      return res.status(404).json({
+        message: "Member not found",
+      });
+    }
+    // Delete previous image if it exists
+    if (member.profile_image_public_id) {
+      await cloudinary.uploader.destroy(member.profile_image_public_id);
+    }
+    const deletedMember = await deleteMemberById(memberId);
+    return res
+      .status(200)
+      .json({ message: "member deleted successfully", deletedMember });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+module.exports = {
+  getAllMembers,
+  addMember,
+  editMember,
+  getMemberDetails,
+  deleteMember,
+};

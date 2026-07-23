@@ -206,6 +206,14 @@ const getMemberById = async (memberId) => {
   return member.rows[0];
 };
 
+const deleteMemberById = async (memberId) => {
+  const member = await pool.query(
+    "DELETE FROM members WHERE id=$1 RETURNING *",
+    [memberId],
+  );
+  return member.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -221,4 +229,5 @@ module.exports = {
   createMember,
   updateMemberById,
   getMemberById,
+  deleteMemberById,
 };
