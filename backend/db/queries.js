@@ -215,8 +215,50 @@ const deleteMemberById = async (memberId) => {
 };
 
 const getAllMemberships = async () => {
-  const memberships = await pool.query("SELECT * FROM member_memberships");
-  return memberships.rows[0];
+  const memberships = await pool.query(`
+    SELECT member_memberships.*,
+    members.first_name AS memberFirstName,
+    members.last_name AS memberLastName,
+    plans.plan_name AS planName
+    FROM member_memberships
+    JOIN members ON member_memberships.member_id=members.id
+    JOIN plans ON member_memberships.plan_id=plans.id
+    `);
+  return memberships.rows;
+};
+
+const Addmembership = async (
+  memberId,
+  planId,
+  startDate,
+  endDate,
+  amountPaid,
+  paymentStatus,
+  notes,
+) => {
+  const membership = await pool.query(
+    `
+    INSERT INTO member_memberships (member_id, plan_id, start_date, end_date, amount_paid, payment_status,notes)
+    VALUES ($1, $2, $3,$4, $5,$6, $7)
+    RETURNING *
+    `,
+    [memberId, planId, startDate, endDate, amountPaid, paymentStatus, notes],
+  );
+  return membership.rows[0];
+};
+
+const getActiveMembershipByMemberId = async (memberId) => {
+  const activeMembership = await pool.query(
+    `
+SELECT *
+FROM member_memberships
+WHERE member_id = $1
+AND is_cancelled = FALSE
+AND end_date >= CURRENT_DATE;
+    `,
+    [memberId],
+  );
+  return activeMembership.rows[0];
 };
 
 module.exports = {
@@ -236,4 +278,6 @@ module.exports = {
   getMemberById,
   deleteMemberById,
   getAllMemberships,
+  Addmembership,
+  getActiveMembershipByMemberId,
 };

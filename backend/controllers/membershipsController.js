@@ -1,4 +1,9 @@
-const { getAllMemberships } = require("../db/queries");
+const {
+  getAllMemberships,
+  getPlanById,
+  Addmembership,
+  getActiveMembershipByMemberId,
+} = require("../db/queries");
 
 const getMemberships = async (req, res) => {
   try {
@@ -12,4 +17,56 @@ const getMemberships = async (req, res) => {
   }
 };
 
-module.exports = { getMemberships };
+const insertMembership = async (req, res) => {
+  try {
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+
+    const { memberId, planId, startDate, amountPaid, paymentStatus, notes } =
+      req.body;
+
+    const existingMembership = await getActiveMembershipByMemberId(memberId);
+    if (existingMembership) {
+      return res.status(400).json({
+        message: "This member already has an active membership.",
+      });
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedStartDate = new Date(startDate);
+    if (selectedStartDate < today) {
+      return res.status(400).json({
+        message: "Start date cannot be in the past.",
+      });
+    }
+
+    const plan = await getPlanById(planId);
+    if (!plan) {
+      return res.status(400).json({ message: "Select a valid plan" });
+    }
+    const planDuration = plan.duration;
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + planDuration);
+
+    const membership = await Addmembership(
+      memberId,
+      planId,
+      startDate,
+      endDate,
+      amountPaid,
+      paymentStatus,
+      notes,
+    );
+    return res
+      .status(201)
+      .json({ message: "membership created successfully", membership });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { getMemberships, insertMembership };

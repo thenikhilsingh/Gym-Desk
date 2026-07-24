@@ -12,13 +12,16 @@ import MembershipsModal from "../components/MembershipsModal";
 import DeleteMembershipModal from "../components/DeleteMembershipModal";
 import useAxios from "../hooks/useAxios";
 import { useEffect } from "react";
+import useFormateDate from "../hooks/useFormatDate";
 
 export default function Memberships() {
   const api = useAxios();
+  const { formatDate } = useFormateDate();
   const [memberships, setMemberships] = useState([]);
 
   const [openMembershipModal, setOpenMembershipModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const closeModal = () => {
     setOpenMembershipModal(false);
@@ -53,7 +56,10 @@ export default function Memberships() {
         </div>
 
         <button
-          onClick={() => setOpenMembershipModal(true)}
+          onClick={() => {
+            setIsEdit(false);
+            setOpenMembershipModal(true);
+          }}
           className="flex items-center gap-2 bg-black text-white px-5 py-3 rounded-lg hover:bg-gray-800"
         >
           <Plus size={18} />
@@ -65,7 +71,7 @@ export default function Memberships() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
         <StatCard
           icon={<CreditCard size={28} className="text-blue-600" />}
-          value={0}
+          value={memberships.length}
           title="Total Memberships"
         />
 
@@ -107,7 +113,7 @@ export default function Memberships() {
             </thead>
 
             <tbody>
-              {!memberships.length ? (
+              {!memberships?.length ? (
                 <tr>
                   <td
                     colSpan={9}
@@ -119,10 +125,10 @@ export default function Memberships() {
               ) : (
                 memberships.map((membership) => (
                   <tr key={membership.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 font-medium">{membership.member}</td>
-                    <td className="p-4">{membership.plan}</td>
-                    <td className="p-4">{membership.start_date}</td>
-                    <td className="p-4">{membership.end_date}</td>
+                    <td className="p-4 font-medium">{`${membership.memberfirstname} ${membership.memberlastname}`}</td>
+                    <td className="p-4">{membership.planname}</td>
+                    <td className="p-4">{formatDate(membership.start_date)}</td>
+                    <td className="p-4">{formatDate(membership.end_date)}</td>
                     <td className="p-4 font-medium">
                       ₹{membership.amount_paid}
                     </td>
@@ -130,7 +136,10 @@ export default function Memberships() {
                       <PaymentBadge status={membership.payment_status} />
                     </td>
                     <td className="p-4">
-                      <StatusBadge status={membership.status} />
+                      <StatusBadge
+                        isCancelled={membership.is_cancelled}
+                        endDate={membership.end_date}
+                      />
                     </td>
                     <td className="p-4">
                       <span
@@ -142,7 +151,13 @@ export default function Memberships() {
                     </td>
                     <td className="p-4">
                       <div className="flex justify-center gap-3">
-                        <button className="text-blue-600 hover:text-blue-800 transition">
+                        <button
+                          onClick={() => {
+                            setIsEdit(true);
+                            setOpenMembershipModal(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 transition"
+                        >
                           <Pencil size={18} />
                         </button>
 
@@ -164,6 +179,8 @@ export default function Memberships() {
       <MembershipsModal
         openMembershipModal={openMembershipModal}
         closeModal={closeModal}
+        isEdit={isEdit}
+        getMemberships={getMemberships}
       />
       <DeleteMembershipModal
         openDeleteModal={openDeleteModal}
@@ -212,24 +229,19 @@ function PaymentBadge({ status }) {
   );
 }
 
-function StatusBadge({ status }) {
+function StatusBadge({ isCancelled, endDate }) {
+  let status = "";
   let classes = "";
 
-  switch (status) {
-    case "Active":
-      classes = "bg-green-100 text-green-700";
-      break;
-
-    case "Expired":
-      classes = "bg-red-100 text-red-700";
-      break;
-
-    case "Cancelled":
-      classes = "bg-gray-200 text-gray-700";
-      break;
-
-    default:
-      classes = "bg-gray-100 text-gray-700";
+  if (isCancelled) {
+    status = "Cancelled";
+    classes = "bg-gray-200 text-gray-700";
+  } else if (new Date() > new Date(endDate)) {
+    status = "Expired";
+    classes = "bg-red-100 text-red-700";
+  } else {
+    status = "Active";
+    classes = "bg-green-100 text-green-700";
   }
 
   return (
