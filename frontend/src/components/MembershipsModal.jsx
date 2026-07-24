@@ -4,14 +4,17 @@ import useAxios from "../hooks/useAxios";
 import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import useFormateDate from "../hooks/useFormatDate";
 
 export default function MembershipsModal({
   openMembershipModal,
   closeModal,
   isEdit,
   getMemberships,
+  selectedMembership,
 }) {
   const api = useAxios();
+  const { formatDate } = useFormateDate();
   const [loading, setLoading] = useState();
   const [members, setMembers] = useState([]);
   const [plans, setPlans] = useState([]);
@@ -53,6 +56,31 @@ export default function MembershipsModal({
     }
   }, [openMembershipModal]);
 
+  const getMembershipDetails = async () => {
+    try {
+      const response = await api.get(`/api/memberships/${selectedMembership}`);
+      if (response.status === 200) {
+        const membershipDetails = response.data.membership;
+        setPayload({
+          memberId: membershipDetails.member_id,
+          planId: membershipDetails.plan_id,
+          startDate: formatDate(membershipDetails.start_date, "input"),
+          amountPaid: membershipDetails.amount_paid,
+          paymentStatus: membershipDetails.payment_status,
+          notes: membershipDetails.notes,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isEdit && openMembershipModal && selectedMembership) {
+      getMembershipDetails();
+    }
+  }, [isEdit, openMembershipModal, selectedMembership]);
+
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     setPayload({
@@ -69,7 +97,17 @@ export default function MembershipsModal({
     setLoading(true);
     try {
       if (isEdit) {
-        console.log(payload);
+        const response = await api.patch(
+          `/api/memberships/edit/${selectedMembership}`,
+          payload,
+        );
+        if (response.status === 200) {
+          getMemberships();
+          handleClose();
+          toast.success(
+            response?.data?.message || "Membership updated Successfully!",
+          );
+        }
       } else {
         const response = await api.post("/api/memberships/add", payload);
         if (response.status === 201) {

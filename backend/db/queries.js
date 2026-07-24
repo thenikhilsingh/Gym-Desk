@@ -261,6 +261,66 @@ AND end_date >= CURRENT_DATE;
   return activeMembership.rows[0];
 };
 
+const getMemberOfTheMembershipById = async (membershipId) => {
+  const member = await pool.query(
+    "SELECT member_id FROM member_memberships WHERE id=$1",
+    [membershipId],
+  );
+  return member.rows[0];
+};
+
+const getStartDateOfTheMembershipById = async (membershipId) => {
+  const startDate = await pool.query(
+    "SELECT start_date FROM member_memberships WHERE id=$1",
+    [membershipId],
+  );
+  return startDate.rows[0];
+};
+
+const updateMembershipById = async (
+  membershipId,
+  memberId,
+  planId,
+  startDate,
+  endDate,
+  amountPaid,
+  paymentStatus,
+  notes,
+) => {
+  const membership = await pool.query(
+    `
+    UPDATE member_memberships
+    SET member_id = COALESCE($2, member_id),
+    plan_id=COALESCE($3, plan_id),
+    start_date=COALESCE($4, start_date),
+    end_date=COALESCE($5, end_date),
+    amount_paid=COALESCE($6, amount_paid),
+    payment_status=COALESCE($7, payment_status),
+    notes=COALESCE($8, notes)
+    WHERE id=$1 RETURNING *
+    `,
+    [
+      membershipId,
+      memberId,
+      planId,
+      startDate,
+      endDate,
+      amountPaid,
+      paymentStatus,
+      notes,
+    ],
+  );
+  return membership.rows[0];
+};
+
+const getMembershipById = async (membershipId) => {
+  const membership = await pool.query(
+    "SELECT * FROM member_memberships WHERE id=$1",
+    [membershipId],
+  );
+  return membership.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -280,4 +340,8 @@ module.exports = {
   getAllMemberships,
   Addmembership,
   getActiveMembershipByMemberId,
+  getMemberOfTheMembershipById,
+  getStartDateOfTheMembershipById,
+  updateMembershipById,
+  getMembershipById,
 };

@@ -22,6 +22,7 @@ export default function Memberships() {
   const [openMembershipModal, setOpenMembershipModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [selectedMembership, setSelectedMembership] = useState(null);
 
   const closeModal = () => {
     setOpenMembershipModal(false);
@@ -154,6 +155,7 @@ export default function Memberships() {
                         <button
                           onClick={() => {
                             setIsEdit(true);
+                            setSelectedMembership(membership.id);
                             setOpenMembershipModal(true);
                           }}
                           className="text-blue-600 hover:text-blue-800 transition"
@@ -162,7 +164,10 @@ export default function Memberships() {
                         </button>
 
                         <button
-                          onClick={() => setOpenDeleteModal(true)}
+                          onClick={() => {
+                            setSelectedMembership(membership.id);
+                            setOpenDeleteModal(true);
+                          }}
                           className="text-red-600 hover:text-red-800 transition"
                         >
                           <Trash2 size={18} />
@@ -181,10 +186,12 @@ export default function Memberships() {
         closeModal={closeModal}
         isEdit={isEdit}
         getMemberships={getMemberships}
+        selectedMembership={selectedMembership}
       />
       <DeleteMembershipModal
         openDeleteModal={openDeleteModal}
         closeDeleteModal={closeDeleteModal}
+        selectedMembership={selectedMembership}
       />
     </div>
   );
