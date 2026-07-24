@@ -333,6 +333,20 @@ const cancelMembershipById = async (membershipId) => {
   return membership.rows[0];
 };
 
+const hasMembershipHistory = async (memberId) => {
+  const result = await pool.query(
+    `
+    SELECT 1
+    FROM member_memberships
+    WHERE member_id = $1
+    LIMIT 1;
+    `,
+    [memberId],
+  );
+
+  return result.rows.length > 0;
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -357,4 +371,5 @@ module.exports = {
   updateMembershipById,
   getMembershipById,
   cancelMembershipById,
+  hasMembershipHistory,
 };

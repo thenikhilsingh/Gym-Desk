@@ -163,15 +163,17 @@ export default function Memberships() {
                           <Pencil size={18} />
                         </button>
 
-                        <button
-                          onClick={() => {
-                            setSelectedMembership(membership.id);
-                            setOpenCancelModal(true);
-                          }}
-                          className="text-red-600 hover:text-red-800 transition"
-                        >
-                          <Ban size={18} />
-                        </button>
+                        {!membership.is_cancelled && (
+                          <button
+                            onClick={() => {
+                              setSelectedMembership(membership.id);
+                              setOpenCancelModal(true);
+                            }}
+                            className="text-red-600 hover:text-red-800 transition"
+                          >
+                            <Ban size={18} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

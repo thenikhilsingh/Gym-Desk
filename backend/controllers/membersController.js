@@ -4,6 +4,7 @@ const {
   updateMemberById,
   getMemberById,
   deleteMemberById,
+  hasMembershipHistory,
 } = require("../db/queries");
 const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
@@ -181,6 +182,13 @@ const deleteMember = async (req, res) => {
     if (!member) {
       return res.status(404).json({
         message: "Member not found",
+      });
+    }
+
+    const hasMembership = await hasMembershipHistory(memberId);
+    if (hasMembership) {
+      return res.status(409).json({
+        message: "This member has membership history and cannot be deleted.",
       });
     }
     // Delete previous image if it exists
