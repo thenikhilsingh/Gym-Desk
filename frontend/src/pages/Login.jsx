@@ -34,7 +34,7 @@ export default function Login() {
         payload,
       );
 
-      if ((response.status = 200)) {
+      if (response.status === 200) {
         storeTokenInLS(response.data.token);
         if (response.data.isAdmin) {
           navigate("/admin");
@@ -63,12 +63,8 @@ export default function Login() {
     }
   };
 
-  if (isLoggedIn && user.is_admin) {
-    return <Navigate to="/admin" />;
-  }
-
-  if (isLoggedIn && !user.is_admin) {
-    return <Navigate to="/app" />;
+  if (isLoggedIn && user) {
+    return user.is_admin ? <Navigate to="/admin" /> : <Navigate to="/app" />;
   }
   return (
     <div className="min-h-screen bg-[#7F88A2] flex items-center justify-center p-6">

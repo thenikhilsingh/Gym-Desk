@@ -19,7 +19,7 @@ export default function AuthProvider({ children }) {
     localStorage.removeItem("token");
   };
 
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const getLoggedInUserData = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/auth/user`, {
