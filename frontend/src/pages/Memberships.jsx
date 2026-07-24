@@ -10,43 +10,12 @@ import {
 } from "lucide-react";
 import MembershipsModal from "../components/MembershipsModal";
 import DeleteMembershipModal from "../components/DeleteMembershipModal";
+import useAxios from "../hooks/useAxios";
+import { useEffect } from "react";
 
 export default function Memberships() {
-  const [memberships, setMemberships] = useState([
-    {
-      id: 1,
-      member: "Nikhil Singh",
-      plan: "Gold Plan",
-      start_date: "23 Jul 2026",
-      end_date: "22 Aug 2026",
-      amount_paid: 2500,
-      payment_status: "Paid",
-      status: "Active",
-      notes: "Paid through UPI and received student discount.",
-    },
-    {
-      id: 2,
-      member: "Rahul Kumar",
-      plan: "Silver Plan",
-      start_date: "01 Jul 2026",
-      end_date: "31 Jul 2026",
-      amount_paid: 1500,
-      payment_status: "Pending",
-      status: "Cancelled",
-      notes: "Membership cancelled due to relocation.",
-    },
-    {
-      id: 3,
-      member: "Aman Verma",
-      plan: "Platinum Plan",
-      start_date: "15 Jul 2026",
-      end_date: "15 Oct 2026",
-      amount_paid: 6000,
-      payment_status: "Partial",
-      status: "Active",
-      notes: "Paid first installment. Remaining due next week.",
-    },
-  ]);
+  const api = useAxios();
+  const [memberships, setMemberships] = useState([]);
 
   const [openMembershipModal, setOpenMembershipModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -58,6 +27,21 @@ export default function Memberships() {
   const closeDeleteModal = () => {
     setOpenDeleteModal(false);
   };
+
+  const getMemberships = async () => {
+    try {
+      const response = await api.get("/api/memberships");
+      if (response.status === 200) {
+        setMemberships(response.data.memberships);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getMemberships();
+  }, []);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">

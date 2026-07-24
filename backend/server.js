@@ -5,6 +5,7 @@ dotenv.config();
 const cors = require("cors");
 const plansRouter = require("./routers/plansRouter");
 const membersRouter = require("./routers/membersRouter");
+const membershipsRouter = require("./routers/membershipsRouter");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/plans", plansRouter);
 app.use("/api/members", membersRouter);
+app.use("/api/memberships", membershipsRouter);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

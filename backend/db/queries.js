@@ -214,6 +214,11 @@ const deleteMemberById = async (memberId) => {
   return member.rows[0];
 };
 
+const getAllMemberships = async () => {
+  const memberships = await pool.query("SELECT * FROM member_memberships");
+  return memberships.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -230,4 +235,5 @@ module.exports = {
   updateMemberById,
   getMemberById,
   deleteMemberById,
+  getAllMemberships,
 };
