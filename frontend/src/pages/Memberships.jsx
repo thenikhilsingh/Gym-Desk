@@ -6,10 +6,10 @@ import {
   Clock3,
   IndianRupee,
   Pencil,
-  Trash2,
+  Ban,
 } from "lucide-react";
 import MembershipsModal from "../components/MembershipsModal";
-import DeleteMembershipModal from "../components/DeleteMembershipModal";
+import CancelMembershipModal from "../components/CancelMembershipModal";
 import useAxios from "../hooks/useAxios";
 import { useEffect } from "react";
 import useFormateDate from "../hooks/useFormatDate";
@@ -20,7 +20,7 @@ export default function Memberships() {
   const [memberships, setMemberships] = useState([]);
 
   const [openMembershipModal, setOpenMembershipModal] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openCancelModal, setOpenCancelModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedMembership, setSelectedMembership] = useState(null);
 
@@ -28,8 +28,8 @@ export default function Memberships() {
     setOpenMembershipModal(false);
   };
 
-  const closeDeleteModal = () => {
-    setOpenDeleteModal(false);
+  const closeCancelModal = () => {
+    setOpenCancelModal(false);
   };
 
   const getMemberships = async () => {
@@ -166,11 +166,11 @@ export default function Memberships() {
                         <button
                           onClick={() => {
                             setSelectedMembership(membership.id);
-                            setOpenDeleteModal(true);
+                            setOpenCancelModal(true);
                           }}
                           className="text-red-600 hover:text-red-800 transition"
                         >
-                          <Trash2 size={18} />
+                          <Ban size={18} />
                         </button>
                       </div>
                     </td>
@@ -188,9 +188,10 @@ export default function Memberships() {
         getMemberships={getMemberships}
         selectedMembership={selectedMembership}
       />
-      <DeleteMembershipModal
-        openDeleteModal={openDeleteModal}
-        closeDeleteModal={closeDeleteModal}
+      <CancelMembershipModal
+        openCancelModal={openCancelModal}
+        closeCancelModal={closeCancelModal}
+        getMemberships={getMemberships}
         selectedMembership={selectedMembership}
       />
     </div>

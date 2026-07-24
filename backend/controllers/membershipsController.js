@@ -7,6 +7,7 @@ const {
   getStartDateOfTheMembershipById,
   getMembershipById,
   updateMembershipById,
+  cancelMembershipById,
 } = require("../db/queries");
 
 const getMemberships = async (req, res) => {
@@ -141,9 +142,42 @@ const getTheMembership = async (req, res) => {
   }
 };
 
+const cancelMembership = async (req, res) => {
+  try {
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+    const { membershipId } = req.params;
+
+    const existingMembership = await getMembershipById(membershipId);
+    if (!existingMembership) {
+      return res.status(404).json({
+        success: false,
+        message: "Membership not found.",
+      });
+    }
+    if (existingMembership.is_cancelled) {
+      return res.status(400).json({
+        success: false,
+        message: "Membership is already cancelled.",
+      });
+    }
+
+    const membership = await cancelMembershipById(membershipId);
+    return res
+      .status(200)
+      .json({ message: "membership cancelled successfully", membership });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   getMemberships,
   insertMembership,
   editMembership,
   getTheMembership,
+  cancelMembership,
 };
