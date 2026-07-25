@@ -21,6 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Plans from "./pages/Plans.jsx";
 import Members from "./pages/Members.jsx";
 import Memberships from "./pages/Memberships.jsx";
+import Trainers from "./pages/Trainers.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
         <Route path="plans" element={<Plans />}></Route>
         <Route path="members" element={<Members />}></Route>
         <Route path="memberships" element={<Memberships />}></Route>
+        <Route path="trainers" element={<Trainers />}></Route>
       </Route>
       {/* App Routes */}
       <Route path="/app" element={<App />}>

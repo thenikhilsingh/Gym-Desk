@@ -6,6 +6,7 @@ const cors = require("cors");
 const plansRouter = require("./routers/plansRouter");
 const membersRouter = require("./routers/membersRouter");
 const membershipsRouter = require("./routers/membershipsRouter");
+const trainersRouter = require("./routers/trainersRouter");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/plans", plansRouter);
 app.use("/api/members", membersRouter);
 app.use("/api/memberships", membershipsRouter);
+app.use("/api/trainers", trainersRouter);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

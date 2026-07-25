@@ -6,6 +6,8 @@ import {
   Users,
   // BadgeIndianRupee,
   CreditCard,
+  IdCard,
+  ContactRound,
   // CalendarCheck2,
   // UserCog,
   // BarChart3,
@@ -33,8 +35,13 @@ const menuItems = [
   },
   {
     title: "Memberships",
-    icon: <Users size={20} />,
+    icon: <IdCard size={20} />,
     path: "/admin/memberships",
+  },
+  {
+    title: "Trainers",
+    icon: <ContactRound size={20} />,
+    path: "/admin/trainers",
   },
 ];
 
