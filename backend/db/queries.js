@@ -394,6 +394,11 @@ WHERE payment_status = 'Paid';
   };
 };
 
+const getTrainers = async () => {
+  const trainers = await pool.query("SELECT * FROM trainers ");
+  return trainers.rows;
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -421,4 +426,5 @@ module.exports = {
   hasMembershipHistory,
   getMembersModuleStatsValues,
   getMembershipsModuleStatsValue,
+  getTrainers,
 };

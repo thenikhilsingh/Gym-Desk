@@ -1,9 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus, Users, BadgeCheck, UserX, Pencil, Trash2 } from "lucide-react";
 import TrainerModal from "../components/TrainerModal";
+import useAxios from "../hooks/useAxios";
+import useFormatDate from "../hooks/useFormatDate";
 
 export default function Trainers() {
+  const api = useAxios();
+  const { formateDate } = useFormatDate();
   const [openModal, setOpenModal] = useState(false);
+  const [trainers, setTrainers] = useState([]);
+
+  const getTrainers = async () => {
+    try {
+      const response = await api.get("/api/trainers");
+      if (response.status === 200) {
+        setTrainers(response.data.trainers);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getTrainers();
+  }, []);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -63,65 +83,73 @@ export default function Trainers() {
             </thead>
 
             <tbody>
-              <tr>
-                <td
-                  colSpan={9}
-                  className="text-center py-8 text-gray-500 font-medium"
-                >
-                  No trainers found
-                </td>
-              </tr>
+              {!trainers.length ? (
+                <tr>
+                  <td
+                    colSpan={9}
+                    className="text-center py-8 text-gray-500 font-medium"
+                  >
+                    No trainers found
+                  </td>
+                </tr>
+              ) : (
+                trainers.map((trainer) => {
+                  return (
+                    <tr className="border-b hover:bg-gray-50">
+                      <td className="p-4">
+                        <img
+                          src={trainer.profile_image_url}
+                          alt=""
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                      </td>
 
-              {/* <tr className="border-b hover:bg-gray-50">
-                <td className="p-4">
-                  <img
-                    src={trainer.profile_image}
-                    alt=""
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                </td>
+                      <td className="p-4 font-medium">{`${trainer.first_name} ${trainer.last_name}`}</td>
 
-                <td className="p-4 font-medium">Rahul Sharma</td>
+                      <td className="p-4">{trainer.phone}</td>
 
-                <td className="p-4">9876543210</td>
+                      <td className="p-4">{trainer.email}</td>
 
-                <td className="p-4">rahul@gmail.com</td>
+                      <td className="p-4">{trainer.specialization}</td>
 
-                <td className="p-4">Strength Training</td>
+                      <td className="p-4 font-medium">₹{trainer.salary}</td>
 
-                <td className="p-4 font-medium">₹35,000</td>
+                      <td className="p-4">
+                        {formateDate(trainer.joining_date)}
+                      </td>
 
-                <td className="p-4">20 Jul 2026</td>
+                      <td className="p-4">
+                        <div className="flex justify-center">
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={trainer.status}
+                              onChange={() => handleStatusToggle(trainer.id)}
+                              className="sr-only peer"
+                            />
 
-                <td className="p-4">
-                  <div className="flex justify-center">
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={trainer.status === "Active"}
-                        onChange={() => handleStatusToggle(trainer.id)}
-                        className="sr-only peer"
-                      />
+                            <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-600 transition-colors"></div>
 
-                      <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-600 transition-colors"></div>
+                            <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5"></div>
+                          </label>
+                        </div>
+                      </td>
 
-                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5"></div>
-                    </label>
-                  </div>
-                </td>
+                      <td className="p-4">
+                        <div className="flex justify-center gap-3">
+                          <button className="text-blue-600 hover:text-blue-800">
+                            <Pencil size={18} />
+                          </button>
 
-                <td className="p-4">
-                  <div className="flex justify-center gap-3">
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <Pencil size={18} />
-                    </button>
-
-                    <button className="text-red-600 hover:text-red-800">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr> */}
+                          <button className="text-red-600 hover:text-red-800">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
