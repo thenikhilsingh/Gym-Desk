@@ -83,7 +83,8 @@ const updateIsActiveToggle = async (planId, isActive) => {
   const toggle = await pool.query(
     `
     UPDATE plans
-    SET is_active=$2
+    SET is_active=$2,
+    updated_at=CURRENT_TIMESTAMP
     WHERE id=$1
     RETURNING *
     `,
@@ -176,7 +177,8 @@ join_date = COALESCE($10, join_date),
 height = COALESCE($11, height),
 weight = COALESCE($12, weight),
 profile_image_url = COALESCE($13, profile_image_url),
-profile_image_public_id = COALESCE($14, profile_image_public_id)
+profile_image_public_id = COALESCE($14, profile_image_public_id),
+updated_at=CURRENT_TIMESTAMP
 WHERE id=$1 RETURNING *
     `,
     [
@@ -296,7 +298,8 @@ const updateMembershipById = async (
     end_date=COALESCE($5, end_date),
     amount_paid=COALESCE($6, amount_paid),
     payment_status=COALESCE($7, payment_status),
-    notes=COALESCE($8, notes)
+    notes=COALESCE($8, notes),
+    updated_at=CURRENT_TIMESTAMP
     WHERE id=$1 RETURNING *
     `,
     [
@@ -325,7 +328,8 @@ const cancelMembershipById = async (membershipId) => {
   const membership = await pool.query(
     `
     UPDATE member_memberships
-    SET is_cancelled=true
+    SET is_cancelled=true,
+    updated_at=CURRENT_TIMESTAMP
     WHERE id=$1 RETURNING *
     `,
     [membershipId],
