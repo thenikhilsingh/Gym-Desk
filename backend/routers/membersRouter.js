@@ -6,6 +6,7 @@ const {
   editMember,
   getMemberDetails,
   deleteMember,
+  getMembersStats,
 } = require("../controllers/membersController");
 const upload = require("../middlewares/multerMiddleware");
 
@@ -24,6 +25,7 @@ membersRouter.patch(
   upload.single("profileImage"),
   editMember,
 );
+membersRouter.get("/stats", authMiddleware, getMembersStats);
 membersRouter.get("/:memberId", authMiddleware, getMemberDetails);
 membersRouter.delete("/delete/:memberId", authMiddleware, deleteMember);
 

@@ -9,6 +9,7 @@ export default function CancelMembershipModal({
   closeCancelModal,
   getMemberships,
   selectedMembership,
+  getMembershipStats,
 }) {
   const api = useAxios();
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,7 @@ export default function CancelMembershipModal({
       );
       if (response.status === 200) {
         getMemberships();
+        getMembershipStats();
         closeCancelModal();
         toast.success(
           response?.data?.message || "Membership cancelled Successfully!",

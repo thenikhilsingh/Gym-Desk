@@ -12,6 +12,7 @@ export default function MembershipsModal({
   isEdit,
   getMemberships,
   selectedMembership,
+  getMembershipStats,
 }) {
   const api = useAxios();
   const { formatDate } = useFormateDate();
@@ -103,6 +104,7 @@ export default function MembershipsModal({
         );
         if (response.status === 200) {
           getMemberships();
+          getMembershipStats();
           handleClose();
           toast.success(
             response?.data?.message || "Membership updated Successfully!",
@@ -112,6 +114,7 @@ export default function MembershipsModal({
         const response = await api.post("/api/memberships/add", payload);
         if (response.status === 201) {
           getMemberships();
+          getMembershipStats();
           handleClose();
           toast.success(
             response?.data?.message || "Membership added Successfully!",

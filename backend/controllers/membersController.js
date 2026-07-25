@@ -5,6 +5,7 @@ const {
   getMemberById,
   deleteMemberById,
   hasMembershipHistory,
+  getMembersModuleStatsValues,
 } = require("../db/queries");
 const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
@@ -205,10 +206,37 @@ const deleteMember = async (req, res) => {
   }
 };
 
+const getMembersStats = async (req, res) => {
+  try {
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        success: false,
+        message: "Only admins are allowed.",
+      });
+    }
+
+    const stats = await getMembersModuleStatsValues();
+
+    return res.status(200).json({
+      success: true,
+      totalActiveMembers: Number(stats.totalActiveMembers.active_members),
+      totalExpiredMembers: Number(stats.totalexpiredMembers.expired_members),
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   getAllMembers,
   addMember,
   editMember,
   getMemberDetails,
   deleteMember,
+  getMembersStats,
 };

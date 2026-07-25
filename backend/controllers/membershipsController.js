@@ -8,6 +8,7 @@ const {
   getMembershipById,
   updateMembershipById,
   cancelMembershipById,
+  getMembershipsModuleStatsValue,
 } = require("../db/queries");
 
 const getMemberships = async (req, res) => {
@@ -174,10 +175,34 @@ const cancelMembership = async (req, res) => {
   }
 };
 
+const getMembershipStats = async (req, res) => {
+  try {
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+
+    const stats = await getMembershipsModuleStatsValue();
+
+    return res.status(200).json({
+      ...stats,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   getMemberships,
   insertMembership,
   editMembership,
   getTheMembership,
   cancelMembership,
+  getMembershipStats,
 };

@@ -10,6 +10,7 @@ export default function MemberModal({
   isEdit,
   getMembers,
   selectedMember,
+  getMemberStats,
 }) {
   const api = useAxios();
   const { formatDate } = useFormatDate();
@@ -116,6 +117,7 @@ export default function MemberModal({
         );
         if (response.status === 200) {
           getMembers();
+          getMemberStats();
           handleClose();
           toast.success(
             response?.data?.message || "Member updated Successfully!",
@@ -125,6 +127,7 @@ export default function MemberModal({
         const response = await api.post("/api/members/add", formData);
         if (response.status === 201) {
           getMembers();
+          getMemberStats();
           handleClose();
           toast.success(
             response?.data?.message || "Member added Successfully!",

@@ -347,6 +347,53 @@ const hasMembershipHistory = async (memberId) => {
   return result.rows.length > 0;
 };
 
+const getMembersModuleStatsValues = async () => {
+  const activeMembers = await pool.query(`
+SELECT COUNT(*) AS active_members
+FROM member_memberships
+WHERE is_cancelled = FALSE
+AND end_date >= CURRENT_DATE;
+    `);
+
+  const expiredMembers = await pool.query(`
+SELECT COUNT(*) AS expired_members
+FROM member_memberships
+WHERE is_cancelled = FALSE
+AND end_date < CURRENT_DATE;
+  `);
+  return {
+    totalActiveMembers: activeMembers.rows[0],
+    totalexpiredMembers: expiredMembers.rows[0],
+  };
+};
+
+const getMembershipsModuleStatsValue = async () => {
+  const activeMembership = await pool.query(`
+SELECT COUNT(*) AS active_memberships
+FROM member_memberships
+WHERE is_cancelled = FALSE
+AND end_date >= CURRENT_DATE;
+    `);
+  const expiredMemberships = await pool.query(`
+SELECT COUNT(*) AS expired_memberships
+FROM member_memberships
+WHERE is_cancelled = FALSE
+AND end_date < CURRENT_DATE;
+  `);
+  const totalRevenue = await pool.query(`
+SELECT COALESCE(SUM(amount_paid), 0) AS total_revenue
+FROM member_memberships
+WHERE payment_status = 'Paid';
+    `);
+  return {
+    totalActiveMemberships: Number(activeMembership.rows[0].active_memberships),
+    totalExpiredMemberships: Number(
+      expiredMemberships.rows[0].expired_memberships,
+    ),
+    totalRevenue: Number(totalRevenue.rows[0].total_revenue),
+  };
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -372,4 +419,6 @@ module.exports = {
   getMembershipById,
   cancelMembershipById,
   hasMembershipHistory,
+  getMembersModuleStatsValues,
+  getMembershipsModuleStatsValue,
 };

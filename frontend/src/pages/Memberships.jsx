@@ -23,6 +23,27 @@ export default function Memberships() {
   const [openCancelModal, setOpenCancelModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedMembership, setSelectedMembership] = useState(null);
+  const [stats, setStats] = useState({
+    totalActiveMemberships: 0,
+    totalExpiredMemberships: 0,
+    totalRevenue: 0,
+  });
+
+  const getMembershipStats = async () => {
+    try {
+      const response = await api.get("/api/memberships/stats");
+
+      if (response.status === 200) {
+        setStats({
+          totalActiveMemberships: response.data.totalActiveMemberships,
+          totalExpiredMemberships: response.data.totalExpiredMemberships,
+          totalRevenue: response.data.totalRevenue,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const closeModal = () => {
     setOpenMembershipModal(false);
@@ -45,6 +66,7 @@ export default function Memberships() {
 
   useEffect(() => {
     getMemberships();
+    getMembershipStats();
   }, []);
 
   return (
@@ -78,19 +100,19 @@ export default function Memberships() {
 
         <StatCard
           icon={<BadgeCheck size={28} className="text-green-600" />}
-          value={0}
+          value={stats.totalActiveMemberships}
           title="Active"
         />
 
         <StatCard
           icon={<Clock3 size={28} className="text-red-600" />}
-          value={0}
-          title="Inactive"
+          value={stats.totalExpiredMemberships}
+          title="Expired"
         />
 
         <StatCard
           icon={<IndianRupee size={28} className="text-yellow-600" />}
-          value={`₹0`}
+          value={`₹${stats.totalRevenue}`}
           title="Revenue"
         />
       </div>
@@ -189,12 +211,14 @@ export default function Memberships() {
         isEdit={isEdit}
         getMemberships={getMemberships}
         selectedMembership={selectedMembership}
+        getMembershipStats={getMembershipStats}
       />
       <CancelMembershipModal
         openCancelModal={openCancelModal}
         closeCancelModal={closeCancelModal}
         getMemberships={getMemberships}
         selectedMembership={selectedMembership}
+        getMembershipStats={getMembershipStats}
       />
     </div>
   );
@@ -245,10 +269,10 @@ function StatusBadge({ isCancelled, endDate }) {
 
   if (isCancelled) {
     status = "Cancelled";
-    classes = "bg-gray-200 text-gray-700";
+    classes = "bg-red-500 text-white";
   } else if (new Date() > new Date(endDate)) {
     status = "Expired";
-    classes = "bg-red-100 text-red-700";
+    classes = "bg-purple-400 text-white";
   } else {
     status = "Active";
     classes = "bg-green-100 text-green-700";

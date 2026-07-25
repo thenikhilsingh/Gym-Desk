@@ -8,6 +8,7 @@ export default function DeleteMemberModal({
   closeModal,
   selectedMember,
   getMembers,
+  getMemberStats,
 }) {
   const api = useAxios();
   const [memberName, setMemberName] = useState("");
@@ -40,6 +41,7 @@ export default function DeleteMemberModal({
 
       if (response.status === 200) {
         getMembers();
+        getMemberStats();
         closeModal();
         toast.success(
           response?.data?.message || "Member deleted successfully!",

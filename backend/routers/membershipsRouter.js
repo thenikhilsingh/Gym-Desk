@@ -6,11 +6,13 @@ const {
   editMembership,
   getTheMembership,
   cancelMembership,
+  getMembershipStats,
 } = require("../controllers/membershipsController");
 
 const membershipsRouter = Router();
 
 membershipsRouter.get("/", authMiddleware, getMemberships);
+membershipsRouter.get("/stats", authMiddleware, getMembershipStats);
 membershipsRouter.get("/:membershipId", authMiddleware, getTheMembership);
 membershipsRouter.post("/add", authMiddleware, insertMembership);
 membershipsRouter.patch("/edit/:membershipId", authMiddleware, editMembership);

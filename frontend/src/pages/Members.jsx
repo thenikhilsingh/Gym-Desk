@@ -22,8 +22,27 @@ export default function Members() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
+  const [stats, setStats] = useState({
+    totalActiveMembers: 0,
+    totalExpiredMembers: 0,
+  });
   const closeModal = () => {
     setOpenMemberModal(false);
+  };
+
+  const getMemberStats = async () => {
+    try {
+      const response = await api.get("/api/members/stats");
+
+      if (response.status === 200) {
+        setStats({
+          totalActiveMembers: response.data.totalActiveMembers,
+          totalExpiredMembers: response.data.totalExpiredMembers,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const [members, setMembers] = useState([]);
@@ -38,6 +57,7 @@ export default function Members() {
 
   useEffect(() => {
     getMembers();
+    getMemberStats();
   }, []);
 
   return (
@@ -72,14 +92,14 @@ export default function Members() {
 
         <div className="bg-white rounded-xl shadow p-5">
           <UserCheck size={28} className="text-green-600 mb-3" />
-          <h2 className="text-3xl font-bold">0</h2>
+          <h2 className="text-3xl font-bold">{stats.totalActiveMembers}</h2>
           <p className="text-gray-500">Active Members</p>
         </div>
 
         <div className="bg-white rounded-xl shadow p-5">
           <UserX size={28} className="text-red-600 mb-3" />
-          <h2 className="text-3xl font-bold">0</h2>
-          <p className="text-gray-500">Inactive Members</p>
+          <h2 className="text-3xl font-bold">{stats.totalExpiredMembers}</h2>
+          <p className="text-gray-500">Expired Members</p>
         </div>
       </div>
 
@@ -165,6 +185,7 @@ export default function Members() {
         isEdit={isEdit}
         selectedMember={selectedMember}
         getMembers={getMembers}
+        getMemberStats={getMemberStats}
       />
       <ViewMemberModal
         openViewModal={openViewModal}
@@ -176,6 +197,7 @@ export default function Members() {
         closeModal={() => setOpenDeleteModal(false)}
         selectedMember={selectedMember}
         getMembers={getMembers}
+        getMemberStats={getMemberStats}
       />
     </div>
   );
