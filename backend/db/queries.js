@@ -431,6 +431,57 @@ const insertTrainer = async (
   return trainer.rows[0];
 };
 
+const getTrainerById = async (trainerId) => {
+  const trainer = await pool.query("SELECT * FROM trainers WHERE id=$1", [
+    trainerId,
+  ]);
+  return trainer.rows[0];
+};
+
+const updateTrainer = async (
+  trainerId,
+  firstName,
+  lastName,
+  phone,
+  email,
+  specialization,
+  salary,
+  joiningDate,
+  profileImageURL,
+  profileImagePublicId,
+) => {
+  const trainer = await pool.query(
+    `
+    UPDATE trainers
+    SET first_name=COALESCE($2,first_name),
+    last_name=COALESCE($3,last_name),
+    phone=COALESCE($4,phone),
+    email=COALESCE($5,email),
+    specialization=COALESCE($6,specialization),
+    salary=COALESCE($7,salary),
+    joining_date=COALESCE($8,joining_date),
+    profile_image_url=COALESCE($9,profile_image_url),
+    profile_image_public_id=COALESCE($10,profile_image_public_id),
+    updated_at=CURRENT_TIMESTAMP
+    WHERE id=$1
+    RETURNING *
+    `,
+    [
+      trainerId,
+      firstName,
+      lastName,
+      phone,
+      email,
+      specialization,
+      salary,
+      joiningDate,
+      profileImageURL,
+      profileImagePublicId,
+    ],
+  );
+  return trainer.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -460,4 +511,6 @@ module.exports = {
   getMembershipsModuleStatsValue,
   getTrainers,
   insertTrainer,
+  getTrainerById,
+  updateTrainer,
 };

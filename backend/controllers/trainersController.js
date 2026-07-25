@@ -1,5 +1,10 @@
-const { getTrainers, insertTrainer } = require("../db/queries");
-const { uploadOnCloudinary } = require("../utils/cloudinary");
+const {
+  getTrainers,
+  insertTrainer,
+  getTrainerById,
+  updateTrainer,
+} = require("../db/queries");
+const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
 const getAllTrainers = async (req, res) => {
   try {
@@ -65,4 +70,79 @@ const addTrainer = async (req, res) => {
   }
 };
 
-module.exports = { getAllTrainers, addTrainer };
+const editTrainer = async (req, res) => {
+  try {
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+
+    const {
+      firstName,
+      lastName,
+      phone,
+      email,
+      specialization,
+      salary,
+      joiningDate,
+    } = req.body;
+
+    const { trainerId } = req.params;
+
+    let profileImageURL = null;
+    let profileImagePublicId = null;
+    const existingTrainer = await getTrainerById(trainerId);
+    if (!existingTrainer) {
+      return res.status(404).json({ message: "trainer not found" });
+    }
+    if (req.file) {
+      const localPath = req.file.path;
+      const uploadedPhoto = await uploadOnCloudinary(localPath);
+      // Delete previous image if it exists
+      if (existingTrainer.profile_image_public_id) {
+        await cloudinary.uploader.destroy(
+          existingTrainer.profile_image_public_id,
+        );
+      }
+      profileImageURL = uploadedPhoto.secure_url;
+      profileImagePublicId = uploadedPhoto.public_id;
+    }
+
+    const trainer = await updateTrainer(
+      trainerId,
+      firstName,
+      lastName,
+      phone,
+      email,
+      specialization,
+      salary,
+      joiningDate,
+      profileImageURL,
+      profileImagePublicId,
+    );
+    return res.status(200).json({
+      message: "Trainer updated successfully",
+      trainer,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getTrainerDetails = async (req, res) => {
+  try {
+    const { trainerId } = req.params;
+    const trainer = await getTrainerById(trainerId);
+    return res.status(200).json({
+      message: "Trainer fetched successfully",
+      trainer,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { getAllTrainers, addTrainer, editTrainer, getTrainerDetails };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Users, BadgeCheck, UserX, Pencil, Trash2 } from "lucide-react";
+import { Plus, Users, BadgeCheck, UserX, Pencil, Eye } from "lucide-react";
 import TrainerModal from "../components/TrainerModal";
 import useAxios from "../hooks/useAxios";
 import useFormatDate from "../hooks/useFormatDate";
@@ -10,6 +10,7 @@ export default function Trainers() {
   const [openModal, setOpenModal] = useState(false);
   const [trainers, setTrainers] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
+  const [selectedTrainer, setSelectedTrainer] = useState(null);
 
   const getTrainers = async () => {
     try {
@@ -143,6 +144,7 @@ export default function Trainers() {
                         <div className="flex justify-center gap-3">
                           <button
                             onClick={() => {
+                              setSelectedTrainer(trainer.id);
                               setIsEdit(true);
                               setOpenModal(true);
                             }}
@@ -151,8 +153,8 @@ export default function Trainers() {
                             <Pencil size={18} />
                           </button>
 
-                          <button className="text-red-600 hover:text-red-800">
-                            <Trash2 size={18} />
+                          <button className="text-blue-600 hover:text-blue-800">
+                            <Eye size={18} />
                           </button>
                         </div>
                       </td>
@@ -169,6 +171,7 @@ export default function Trainers() {
         setOpenModal={setOpenModal}
         isEdit={isEdit}
         getTrainers={getTrainers}
+        selectedTrainer={selectedTrainer}
       />
     </div>
   );

@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Upload } from "lucide-react";
 import useAxios from "../hooks/useAxios";
 import { toast } from "react-toastify";
+import useFormatDate from "../hooks/useFormatDate";
 
 export default function TrainerModal({
   openModal,
   setOpenModal,
   isEdit,
   getTrainers,
+  selectedTrainer,
 }) {
   const api = useAxios();
+  const { formatDate } = useFormatDate();
   const [payload, setPayload] = useState({
     firstName: "",
     lastName: "",
@@ -21,6 +24,7 @@ export default function TrainerModal({
     photo: null,
   });
   const [loading, setLoading] = useState(false);
+  const [selectedTrainerPhoto, setSelectedTrainerPhoto] = useState("");
 
   const handleClose = () => {
     setOpenModal(false);
@@ -35,6 +39,33 @@ export default function TrainerModal({
       photo: null,
     });
   };
+
+  const getTrainerDetails = async () => {
+    try {
+      const response = await api.get(`/api/trainers/${selectedTrainer}`);
+      if (response.status === 200) {
+        const TrainerDetails = response.data.trainer;
+        setSelectedTrainerPhoto(TrainerDetails.profile_image_url);
+        setPayload({
+          firstName: TrainerDetails.first_name,
+          lastName: TrainerDetails.last_name,
+          phone: TrainerDetails.phone,
+          email: TrainerDetails.email,
+          specialization: TrainerDetails.specialization,
+          salary: TrainerDetails.salary,
+          joiningDate: formatDate(TrainerDetails.joining_date, "input"),
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (openModal && selectedTrainer && isEdit) {
+      getTrainerDetails();
+    }
+  }, [openModal, selectedTrainer, isEdit]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -61,9 +92,22 @@ export default function TrainerModal({
     formData.append("specialization", payload.specialization);
     formData.append("salary", payload.salary);
     formData.append("joiningDate", payload.joiningDate);
-    formData.append("photo", payload.photo);
+    if (payload.photo) {
+      formData.append("photo", payload.photo);
+    }
     try {
       if (isEdit) {
+        const response = await api.patch(
+          `/api/trainers/edit/${selectedTrainer}`,
+          formData,
+        );
+        if (response.status === 200) {
+          getTrainers();
+          handleClose();
+          toast.success(
+            response?.data?.message || "trainer updated Successfully!",
+          );
+        }
       } else {
         const response = await api.post("/api/trainers/add", formData);
         if (response.status === 201) {
@@ -112,6 +156,12 @@ export default function TrainerModal({
                   <img
                     src={URL.createObjectURL(payload.photo)}
                     alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : selectedTrainerPhoto ? (
+                  <img
+                    src={selectedTrainerPhoto}
+                    alt="Trainer"
                     className="w-full h-full object-cover"
                   />
                 ) : (
