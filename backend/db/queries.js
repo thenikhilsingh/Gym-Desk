@@ -399,6 +399,38 @@ const getTrainers = async () => {
   return trainers.rows;
 };
 
+const insertTrainer = async (
+  firstName,
+  lastName,
+  phone,
+  email,
+  specialization,
+  salary,
+  joiningDate,
+  profileImageURL,
+  profileImagePublicId,
+) => {
+  const trainer = await pool.query(
+    `
+    INSERT INTO trainers (first_name,last_name,phone,email,specialization,salary,joining_date,profile_image_url,profile_image_public_id)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+    RETURNING *
+    `,
+    [
+      firstName,
+      lastName,
+      phone,
+      email,
+      specialization,
+      salary,
+      joiningDate,
+      profileImageURL,
+      profileImagePublicId,
+    ],
+  );
+  return trainer.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -427,4 +459,5 @@ module.exports = {
   getMembersModuleStatsValues,
   getMembershipsModuleStatsValue,
   getTrainers,
+  insertTrainer,
 };

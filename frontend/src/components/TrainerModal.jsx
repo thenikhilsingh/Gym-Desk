@@ -1,15 +1,94 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, Upload } from "lucide-react";
+import useAxios from "../hooks/useAxios";
+import { toast } from "react-toastify";
 
-export default function TrainerModal({ openModal, setOpenModal }) {
+export default function TrainerModal({
+  openModal,
+  setOpenModal,
+  isEdit,
+  getTrainers,
+}) {
+  const api = useAxios();
+  const [payload, setPayload] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    specialization: "",
+    salary: "",
+    joiningDate: "",
+    photo: null,
+  });
+  const [loading, setLoading] = useState(false);
+
   const handleClose = () => {
     setOpenModal(false);
+    setPayload({
+      firstName: "",
+      lastName: "",
+      phone: "",
+      email: "",
+      specialization: "",
+      salary: "",
+      joiningDate: "",
+      photo: null,
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    setPayload({
+      ...payload,
+      [name]:
+        type === "number"
+          ? value === ""
+            ? ""
+            : Number(value)
+          : type === "file"
+            ? files[0]
+            : value,
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("firstName", payload.firstName);
+    formData.append("lastName", payload.lastName);
+    formData.append("phone", payload.phone);
+    formData.append("email", payload.email);
+    formData.append("specialization", payload.specialization);
+    formData.append("salary", payload.salary);
+    formData.append("joiningDate", payload.joiningDate);
+    formData.append("photo", payload.photo);
+    try {
+      if (isEdit) {
+      } else {
+        const response = await api.post("/api/trainers/add", formData);
+        if (response.status === 201) {
+          getTrainers();
+          handleClose();
+          toast.success(
+            response?.data?.message || "trainer added Successfully!",
+          );
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!openModal) return null;
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <form className="bg-white rounded-2xl shadow-xl w-full max-w-3xl">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-3xl"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-2xl font-bold">Add Trainer</h2>
@@ -28,13 +107,27 @@ export default function TrainerModal({ openModal, setOpenModal }) {
           {/* Image Upload */}
           <div className="flex justify-center">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-28 h-28 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-                <Upload className="text-gray-400" size={30} />
+              <div className="w-28 h-28 rounded-full border-2 border-dashed border-gray-300 overflow-hidden flex items-center justify-center">
+                {payload.photo ? (
+                  <img
+                    src={URL.createObjectURL(payload.photo)}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Upload className="text-gray-400" size={30} />
+                )}
               </div>
 
               <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium">
                 Choose Image
-                <input type="file" className="hidden" />
+                <input
+                  name="photo"
+                  accept="image/*"
+                  onChange={handleChange}
+                  type="file"
+                  className="hidden"
+                />
               </label>
             </div>
           </div>
@@ -47,6 +140,9 @@ export default function TrainerModal({ openModal, setOpenModal }) {
                 type="text"
                 placeholder="Enter first name"
                 className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                name="firstName"
+                value={payload.firstName}
+                onChange={handleChange}
               />
             </div>
 
@@ -56,6 +152,9 @@ export default function TrainerModal({ openModal, setOpenModal }) {
                 type="text"
                 placeholder="Enter last name"
                 className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                name="lastName"
+                value={payload.lastName}
+                onChange={handleChange}
               />
             </div>
 
@@ -65,6 +164,9 @@ export default function TrainerModal({ openModal, setOpenModal }) {
                 type="text"
                 placeholder="Enter phone"
                 className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                name="phone"
+                value={payload.phone}
+                onChange={handleChange}
               />
             </div>
 
@@ -74,6 +176,9 @@ export default function TrainerModal({ openModal, setOpenModal }) {
                 type="email"
                 placeholder="Enter email"
                 className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                name="email"
+                value={payload.email}
+                onChange={handleChange}
               />
             </div>
 
@@ -83,6 +188,9 @@ export default function TrainerModal({ openModal, setOpenModal }) {
                 type="text"
                 placeholder="Strength Training"
                 className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                name="specialization"
+                value={payload.specialization}
+                onChange={handleChange}
               />
             </div>
 
@@ -92,6 +200,9 @@ export default function TrainerModal({ openModal, setOpenModal }) {
                 type="number"
                 placeholder="Enter salary"
                 className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                name="salary"
+                value={payload.salary}
+                onChange={handleChange}
               />
             </div>
 
@@ -100,16 +211,10 @@ export default function TrainerModal({ openModal, setOpenModal }) {
               <input
                 type="date"
                 className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                name="joiningDate"
+                value={payload.joiningDate}
+                onChange={handleChange}
               />
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">Status</label>
-
-              <select className="w-full border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-black">
-                <option>Active</option>
-                <option>Inactive</option>
-              </select>
             </div>
           </div>
         </div>
@@ -126,9 +231,16 @@ export default function TrainerModal({ openModal, setOpenModal }) {
 
           <button
             type="submit"
+            disabled={loading}
             className="px-5 py-2 rounded-lg bg-black text-white hover:bg-gray-800"
           >
-            Save Trainer
+            {loading
+              ? isEdit
+                ? "Updating..."
+                : "Saving..."
+              : isEdit
+                ? "Update Trainer"
+                : "Save Trainer"}
           </button>
         </div>
       </form>

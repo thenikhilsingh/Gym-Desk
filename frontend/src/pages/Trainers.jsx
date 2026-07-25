@@ -6,9 +6,10 @@ import useFormatDate from "../hooks/useFormatDate";
 
 export default function Trainers() {
   const api = useAxios();
-  const { formateDate } = useFormatDate();
+  const { formatDate } = useFormatDate();
   const [openModal, setOpenModal] = useState(false);
   const [trainers, setTrainers] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
 
   const getTrainers = async () => {
     try {
@@ -35,7 +36,10 @@ export default function Trainers() {
         </div>
 
         <button
-          onClick={() => setOpenModal(true)}
+          onClick={() => {
+            setIsEdit(false);
+            setOpenModal(true);
+          }}
           className="flex items-center gap-2 bg-black text-white px-5 py-3 rounded-lg hover:bg-gray-800"
         >
           <Plus size={18} />
@@ -95,7 +99,7 @@ export default function Trainers() {
               ) : (
                 trainers.map((trainer) => {
                   return (
-                    <tr className="border-b hover:bg-gray-50">
+                    <tr key={trainer.id} className="border-b hover:bg-gray-50">
                       <td className="p-4">
                         <img
                           src={trainer.profile_image_url}
@@ -115,7 +119,7 @@ export default function Trainers() {
                       <td className="p-4 font-medium">₹{trainer.salary}</td>
 
                       <td className="p-4">
-                        {formateDate(trainer.joining_date)}
+                        {formatDate(trainer.joining_date)}
                       </td>
 
                       <td className="p-4">
@@ -137,7 +141,13 @@ export default function Trainers() {
 
                       <td className="p-4">
                         <div className="flex justify-center gap-3">
-                          <button className="text-blue-600 hover:text-blue-800">
+                          <button
+                            onClick={() => {
+                              setIsEdit(true);
+                              setOpenModal(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
                             <Pencil size={18} />
                           </button>
 
@@ -154,7 +164,12 @@ export default function Trainers() {
           </table>
         </div>
       </div>
-      <TrainerModal openModal={openModal} setOpenModal={setOpenModal} />
+      <TrainerModal
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        isEdit={isEdit}
+        getTrainers={getTrainers}
+      />
     </div>
   );
 }
