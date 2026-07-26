@@ -11,6 +11,7 @@ export default function Trainers() {
   const [trainers, setTrainers] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
+  const [stats, setStats] = useState({});
 
   const getTrainers = async () => {
     try {
@@ -23,8 +24,18 @@ export default function Trainers() {
     }
   };
 
+  const getTrainerStats = async () => {
+    try {
+      const response = await api.get("/api/trainers/stats");
+      if (response.status === 200) {
+        setStats(response.data.stats);
+      }
+    } catch (error) {}
+  };
+
   useEffect(() => {
     getTrainers();
+    getTrainerStats();
   }, []);
 
   const handleStatusToggle = async (trainerId, status) => {
@@ -35,6 +46,7 @@ export default function Trainers() {
       );
       if (response.status === 200) {
         getTrainers();
+        getTrainerStats();
       }
     } catch (error) {
       console.log(error);
@@ -66,19 +78,19 @@ export default function Trainers() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
         <StatCard
           icon={<Users size={28} className="text-blue-600" />}
-          value={0}
+          value={stats.total_trainers}
           title="Total Trainers"
         />
 
         <StatCard
           icon={<BadgeCheck size={28} className="text-green-600" />}
-          value={0}
+          value={stats.total_active_trainers}
           title="Active Trainers"
         />
 
         <StatCard
           icon={<UserX size={28} className="text-red-600" />}
-          value={0}
+          value={stats.total_inactive_trainers}
           title="Inactive Trainers"
         />
       </div>
@@ -191,6 +203,7 @@ export default function Trainers() {
         isEdit={isEdit}
         getTrainers={getTrainers}
         selectedTrainer={selectedTrainer}
+        getTrainerStats={getTrainerStats}
       />
     </div>
   );

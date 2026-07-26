@@ -490,13 +490,25 @@ const toggleTrainerActiveStatus = async (trainerId, status) => {
   const toggle = await pool.query(
     `
     UPDATE trainers 
-    SET status=$2
+    SET status=$2,
+    updated_at=CURRENT_TIMESTAMP
     WHERE id=$1
     RETURNING *
     `,
     [trainerId, status],
   );
   return toggle.rows[0];
+};
+
+const trainersStatCardDetails = async () => {
+  const details = await pool.query(`
+      SELECT
+      COUNT(*) AS total_trainers,
+      COUNT(*) FILTER (WHERE status = TRUE) AS total_active_trainers,
+      COUNT(*) FILTER (WHERE status = FALSE) AS total_inactive_trainers
+      FROM trainers;
+    `);
+  return details.rows[0];
 };
 
 module.exports = {
@@ -531,4 +543,5 @@ module.exports = {
   getTrainerById,
   updateTrainer,
   toggleTrainerActiveStatus,
+  trainersStatCardDetails,
 };

@@ -7,11 +7,13 @@ const {
   editTrainer,
   getTrainerDetails,
   toggleTrainerStatus,
+  getTrainersStats,
 } = require("../controllers/trainersController");
 
 const trainersRouter = Router();
 
 trainersRouter.get("/", authMiddleware, getAllTrainers);
+trainersRouter.get("/stats", authMiddleware, getTrainersStats);
 trainersRouter.get("/:trainerId", authMiddleware, getTrainerDetails);
 trainersRouter.post("/add", authMiddleware, upload.single("photo"), addTrainer);
 trainersRouter.patch(

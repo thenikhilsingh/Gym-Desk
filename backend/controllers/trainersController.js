@@ -4,6 +4,7 @@ const {
   getTrainerById,
   updateTrainer,
   toggleTrainerActiveStatus,
+  trainersStatCardDetails,
 } = require("../db/queries");
 const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
@@ -166,10 +167,24 @@ const toggleTrainerStatus = async (req, res) => {
   }
 };
 
+const getTrainersStats = async (req, res) => {
+  try {
+    const stats = await trainersStatCardDetails();
+    return res.status(200).json({
+      message: "Trainer status fetched successfully",
+      stats,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAllTrainers,
   addTrainer,
   editTrainer,
   getTrainerDetails,
   toggleTrainerStatus,
+  getTrainersStats,
 };

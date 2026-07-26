@@ -10,6 +10,7 @@ export default function TrainerModal({
   isEdit,
   getTrainers,
   selectedTrainer,
+  getTrainerStats,
 }) {
   const api = useAxios();
   const { formatDate } = useFormatDate();
@@ -103,6 +104,7 @@ export default function TrainerModal({
         );
         if (response.status === 200) {
           getTrainers();
+          getTrainerStats();
           handleClose();
           toast.success(
             response?.data?.message || "trainer updated Successfully!",
@@ -112,6 +114,7 @@ export default function TrainerModal({
         const response = await api.post("/api/trainers/add", formData);
         if (response.status === 201) {
           getTrainers();
+          getTrainerStats();
           handleClose();
           toast.success(
             response?.data?.message || "trainer added Successfully!",
