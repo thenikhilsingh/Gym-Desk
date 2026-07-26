@@ -6,6 +6,7 @@ const {
   addTrainer,
   editTrainer,
   getTrainerDetails,
+  toggleTrainerStatus,
 } = require("../controllers/trainersController");
 
 const trainersRouter = Router();
@@ -18,6 +19,11 @@ trainersRouter.patch(
   authMiddleware,
   upload.single("photo"),
   editTrainer,
+);
+trainersRouter.patch(
+  "/toggleTrainerStatus/:trainerId",
+  authMiddleware,
+  toggleTrainerStatus,
 );
 
 module.exports = trainersRouter;

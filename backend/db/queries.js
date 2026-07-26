@@ -486,6 +486,19 @@ const updateTrainer = async (
   return trainer.rows[0];
 };
 
+const toggleTrainerActiveStatus = async (trainerId, status) => {
+  const toggle = await pool.query(
+    `
+    UPDATE trainers 
+    SET status=$2
+    WHERE id=$1
+    RETURNING *
+    `,
+    [trainerId, status],
+  );
+  return toggle.rows[0];
+};
+
 module.exports = {
   getUserbyEmail,
   getUserbyEmailButWithoutPassword,
@@ -517,4 +530,5 @@ module.exports = {
   insertTrainer,
   getTrainerById,
   updateTrainer,
+  toggleTrainerActiveStatus,
 };

@@ -3,6 +3,7 @@ const {
   insertTrainer,
   getTrainerById,
   updateTrainer,
+  toggleTrainerActiveStatus,
 } = require("../db/queries");
 const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
@@ -145,4 +146,30 @@ const getTrainerDetails = async (req, res) => {
   }
 };
 
-module.exports = { getAllTrainers, addTrainer, editTrainer, getTrainerDetails };
+const toggleTrainerStatus = async (req, res) => {
+  try {
+    if (!req.user.is_admin) {
+      return res.status(403).json({
+        message: "Only admins are allowed.",
+      });
+    }
+    const { status } = req.body;
+    const { trainerId } = req.params;
+    const toggle = await toggleTrainerActiveStatus(trainerId, status);
+    return res.status(200).json({
+      message: "Trainer status updated successfully",
+      toggle,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {
+  getAllTrainers,
+  addTrainer,
+  editTrainer,
+  getTrainerDetails,
+  toggleTrainerStatus,
+};

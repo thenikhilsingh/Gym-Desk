@@ -27,6 +27,20 @@ export default function Trainers() {
     getTrainers();
   }, []);
 
+  const handleStatusToggle = async (trainerId, status) => {
+    try {
+      const response = await api.patch(
+        `/api/trainers/toggleTrainerStatus/${trainerId}`,
+        { status },
+      );
+      if (response.status === 200) {
+        getTrainers();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Header */}
@@ -128,8 +142,13 @@ export default function Trainers() {
                           <label className="relative inline-flex items-center cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={trainer.status}
-                              onChange={() => handleStatusToggle(trainer.id)}
+                              checked={trainer.status === true}
+                              onChange={() =>
+                                handleStatusToggle(
+                                  trainer.id,
+                                  trainer.status === true ? false : true,
+                                )
+                              }
                               className="sr-only peer"
                             />
 
