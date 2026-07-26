@@ -3,6 +3,7 @@ import { Plus, Users, BadgeCheck, UserX, Pencil, Eye } from "lucide-react";
 import TrainerModal from "../components/TrainerModal";
 import useAxios from "../hooks/useAxios";
 import useFormatDate from "../hooks/useFormatDate";
+import TrainerViewModal from "../components/TrainerViewModal";
 
 export default function Trainers() {
   const api = useAxios();
@@ -12,6 +13,7 @@ export default function Trainers() {
   const [isEdit, setIsEdit] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
   const [stats, setStats] = useState({});
+  const [viewModal, setViewModal] = useState(false);
 
   const getTrainers = async () => {
     try {
@@ -184,7 +186,13 @@ export default function Trainers() {
                             <Pencil size={18} />
                           </button>
 
-                          <button className="text-blue-600 hover:text-blue-800">
+                          <button
+                            onClick={() => {
+                              setSelectedTrainer(trainer.id);
+                              setViewModal(true);
+                            }}
+                            className="text-green-600 hover:text-green-800"
+                          >
                             <Eye size={18} />
                           </button>
                         </div>
@@ -204,6 +212,11 @@ export default function Trainers() {
         getTrainers={getTrainers}
         selectedTrainer={selectedTrainer}
         getTrainerStats={getTrainerStats}
+      />
+      <TrainerViewModal
+        openModal={viewModal}
+        setOpenModal={setViewModal}
+        selectedTrainer={selectedTrainer}
       />
     </div>
   );
