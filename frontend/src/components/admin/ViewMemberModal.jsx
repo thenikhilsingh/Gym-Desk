@@ -9,8 +9,8 @@ import {
   Ruler,
   Weight,
 } from "lucide-react";
-import useAxios from "../hooks/useAxios";
-import useFormatDate from "../hooks/useFormatDate";
+import useAxios from "../../hooks/useAxios";
+import useFormatDate from "../../hooks/useFormatDate";
 
 export default function ViewMemberModal({
   openViewModal,

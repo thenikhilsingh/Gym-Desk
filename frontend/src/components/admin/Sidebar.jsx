@@ -4,7 +4,7 @@ import {
   Dumbbell,
   LayoutDashboard,
   Users,
-  // BadgeIndianRupee,
+  BadgeIndianRupee,
   CreditCard,
   IdCard,
   ContactRound,
@@ -15,7 +15,7 @@ import {
   // Settings,
   LogOutIcon,
 } from "lucide-react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const menuItems = [
   {
@@ -42,6 +42,11 @@ const menuItems = [
     title: "Trainers",
     icon: <ContactRound size={20} />,
     path: "/admin/trainers",
+  },
+  {
+    title: "Payments",
+    icon: <BadgeIndianRupee size={20} />,
+    path: "/admin/payments",
   },
 ];
 

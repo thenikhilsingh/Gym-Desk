@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import Sidebar from "../components/Sidebar";
-import { AuthContext } from "../context/AuthContext";
+import Sidebar from "../../components/admin/Sidebar";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Admin() {
   const [openSidebar, setOpenSidebar] = useState(false);

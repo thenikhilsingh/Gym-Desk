@@ -1,54 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TriangleAlert, X } from "lucide-react";
-import useAxios from "../hooks/useAxios";
-import { useState } from "react";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import useAxios from "../../hooks/useAxios";
 
-export default function DeletePlanModal({
+export default function DeleteMemberModal({
   openDeleteModal,
   closeModal,
-  selectedPlan,
-  getPlans,
+  selectedMember,
+  getMembers,
+  getMemberStats,
 }) {
   const api = useAxios();
-  const [planName, setPlanName] = useState("");
-  const getSelectPlanDetails = async () => {
+  const [memberName, setMemberName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const getSelectedMemberDetails = async () => {
     try {
-      const response = await api.get(`/api/plans/${selectedPlan}`);
-      setPlanName(response.data.plan.plan_name);
+      const response = await api.get(`/api/members/${selectedMember}`);
+
+      const member = response.data.member;
+
+      setMemberName(`${member.first_name} ${member.last_name || ""}`.trim());
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    if (openDeleteModal && selectedPlan) {
-      getSelectPlanDetails();
+    if (openDeleteModal && selectedMember) {
+      getSelectedMemberDetails();
     }
-  }, [openDeleteModal, selectedPlan]);
+  }, [openDeleteModal, selectedMember]);
 
   const handleDelete = async () => {
+    setLoading(true);
     try {
-      const response = await api.delete(`/api/plans/delete/${selectedPlan}`);
+      const response = await api.delete(
+        `/api/members/delete/${selectedMember}`,
+      );
+
       if (response.status === 200) {
-        getPlans();
+        getMembers();
+        getMemberStats();
         closeModal();
-        toast.success(response?.data?.message || "Plan deleted Successfully!");
+        toast.success(
+          response?.data?.message || "Member deleted successfully!",
+        );
       }
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
     }
   };
+
   if (!openDeleteModal) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl overflow-hidden">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b px-6 py-5">
-          <h2 className="text-xl font-bold text-red-600">Delete Plan</h2>
+          <h2 className="text-xl font-bold text-red-600">Delete Member</h2>
 
           <button
             onClick={closeModal}
@@ -61,17 +75,17 @@ export default function DeletePlanModal({
         {/* Body */}
         <div className="px-6 py-8 text-center">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <TriangleAlert className="text-red-600" size={32} />
+            <TriangleAlert size={32} className="text-red-600" />
           </div>
 
           <h3 className="text-lg font-semibold">
-            Are you sure you want to delete {planName || "this plan"}?
+            Are you sure you want to delete {memberName || "this member"}?
           </h3>
 
           <p className="mt-2 text-gray-500">
             This will permanently delete{" "}
             <span className="font-semibold text-black">
-              {planName || "this plan"}
+              {memberName || "this member"}
             </span>
             . This action cannot be undone.
           </p>
@@ -88,9 +102,10 @@ export default function DeletePlanModal({
 
           <button
             onClick={handleDelete}
+            disabled={loading}
             className="rounded-lg bg-red-600 px-5 py-2.5 text-white hover:bg-red-700"
           >
-            Delete Plan
+            {loading ? "deleting..." : "Delete Member"}
           </button>
         </div>
       </div>

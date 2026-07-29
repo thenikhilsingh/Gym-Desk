@@ -1,10 +1,10 @@
 import React from "react";
 import { X } from "lucide-react";
-import useAxios from "../hooks/useAxios";
+import useAxios from "../../hooks/useAxios";
 import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import useFormateDate from "../hooks/useFormatDate";
+import useFormateDate from "../../hooks/useFormatDate";
 
 export default function MembershipsModal({
   openMembershipModal,

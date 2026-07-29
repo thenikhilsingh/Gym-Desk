@@ -8,11 +8,11 @@ import {
   Pencil,
   Ban,
 } from "lucide-react";
-import MembershipsModal from "../components/MembershipsModal";
-import CancelMembershipModal from "../components/CancelMembershipModal";
-import useAxios from "../hooks/useAxios";
+import MembershipsModal from "../../components/admin/MembershipsModal";
+import CancelMembershipModal from "../../components/admin/CancelMembershipModal";
+import useAxios from "../../hooks/useAxios";
 import { useEffect } from "react";
-import useFormateDate from "../hooks/useFormatDate";
+import useFormateDate from "../../hooks/useFormatDate";
 
 export default function Memberships() {
   const api = useAxios();

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Users, BadgeCheck, UserX, Pencil, Eye } from "lucide-react";
-import TrainerModal from "../components/TrainerModal";
-import useAxios from "../hooks/useAxios";
-import useFormatDate from "../hooks/useFormatDate";
-import TrainerViewModal from "../components/TrainerViewModal";
+import TrainerModal from "../../components/admin/TrainerModal";
+import useAxios from "../../hooks/useAxios";
+import useFormatDate from "../../hooks/useFormatDate";
+import TrainerViewModal from "../../components/admin/TrainerViewModal";
 
 export default function Trainers() {
   const api = useAxios();

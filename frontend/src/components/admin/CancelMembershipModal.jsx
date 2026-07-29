@@ -1,7 +1,7 @@
 import React from "react";
 import { TriangleAlert, X } from "lucide-react";
 import { toast } from "react-toastify";
-import useAxios from "../hooks/useAxios";
+import useAxios from "../../hooks/useAxios";
 import { useState } from "react";
 
 export default function CancelMembershipModal({

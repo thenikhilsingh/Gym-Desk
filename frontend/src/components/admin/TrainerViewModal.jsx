@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X, Phone, Mail, Calendar, IndianRupee, Dumbbell } from "lucide-react";
-import useAxios from "../hooks/useAxios";
-import useFormatDate from "../hooks/useFormatDate";
+import useAxios from "../../hooks/useAxios";
+import useFormatDate from "../../hooks/useFormatDate";
 
 export default function TrainerViewModal({
   openModal,

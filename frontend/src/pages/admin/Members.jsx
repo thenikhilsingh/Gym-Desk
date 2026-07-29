@@ -8,11 +8,11 @@ import {
   Trash2,
   Eye,
 } from "lucide-react";
-import MemberModal from "../components/MemberModal";
-import useAxios from "../hooks/useAxios";
-import useFormatDate from "../hooks/useFormatDate";
-import DeleteMemberModal from "../components/DeleteMemberModal";
-import ViewMemberModal from "../components/ViewMemberModal";
+import MemberModal from "../../components/admin/MemberModal";
+import useAxios from "../../hooks/useAxios";
+import useFormatDate from "../../hooks/useFormatDate";
+import DeleteMemberModal from "../../components/admin/DeleteMemberModal";
+import ViewMemberModal from "../../components/admin/ViewMemberModal";
 
 export default function Members() {
   const api = useAxios();

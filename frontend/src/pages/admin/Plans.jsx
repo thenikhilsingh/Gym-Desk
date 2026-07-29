@@ -7,9 +7,9 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import PlanModal from "../components/PlanModal";
-import DeletePlanModal from "../components/DeletePlanModal";
-import useAxios from "../hooks/useAxios";
+import PlanModal from "../../components/admin/PlanModal";
+import DeletePlanModal from "../../components/admin/DeletePlanModal";
+import useAxios from "../../hooks/useAxios";
 
 export default function Plans() {
   const api = useAxios();

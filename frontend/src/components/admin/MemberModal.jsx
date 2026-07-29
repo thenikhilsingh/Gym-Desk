@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import useAxios from "../hooks/useAxios";
+import useAxios from "../../hooks/useAxios";
 import { toast } from "react-toastify";
-import useFormatDate from "../hooks/useFormatDate";
+import useFormatDate from "../../hooks/useFormatDate";
 
 export default function MemberModal({
   openMemberModal,
