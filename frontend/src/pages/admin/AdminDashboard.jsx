@@ -11,7 +11,7 @@ import {
 const cards = [
   {
     title: "Total Members",
-    value: "256",
+    value: "0",
     subtitle: "+12 this month",
     icon: Users,
     bg: "bg-violet-100",
@@ -19,7 +19,7 @@ const cards = [
   },
   {
     title: "Active Members",
-    value: "210",
+    value: "0",
     subtitle: "+8 this month",
     icon: UserCheck,
     bg: "bg-green-100",
@@ -27,7 +27,7 @@ const cards = [
   },
   {
     title: "Expired Members",
-    value: "46",
+    value: "0",
     subtitle: "-4 this month",
     icon: UserX,
     bg: "bg-orange-100",
@@ -35,7 +35,7 @@ const cards = [
   },
   {
     title: "Today's Attendance",
-    value: "128",
+    value: "0",
     subtitle: "72% of members",
     icon: CalendarCheck2,
     bg: "bg-blue-100",
@@ -43,7 +43,7 @@ const cards = [
   },
   {
     title: "Monthly Revenue",
-    value: "₹1,28,450",
+    value: "₹0",
     subtitle: "+18% this month",
     icon: IndianRupee,
     bg: "bg-purple-100",
@@ -121,17 +121,17 @@ export default function AdminDashboard() {
           <div className="flex flex-col gap-5">
             <div className="flex justify-between">
               <span>🟢 Active</span>
-              <span>210</span>
+              <span>0</span>
             </div>
 
             <div className="flex justify-between">
               <span>🟠 Expiring</span>
-              <span>32</span>
+              <span>0</span>
             </div>
 
             <div className="flex justify-between">
               <span>🔴 Expired</span>
-              <span>14</span>
+              <span>0</span>
             </div>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function AdminDashboard() {
             </thead>
 
             <tbody>
-              {["Rahul", "Priya", "Amit", "Neha"].map((name) => (
+              {["dummydata", "dummydata", "dummydata", "dummydata"].map((name) => (
                 <tr key={name} className="border-t">
                   <td className="py-4">{name}</td>
 
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-semibold mb-6">Pending Payments</h2>
 
           <div className="space-y-5">
-            {["Sandeep", "Rohit", "Karan"].map((member) => (
+            {["dummydata", "dummydata", "dummydata"].map((member) => (
               <div key={member} className="flex justify-between items-center">
                 <div>
                   <h3 className="font-semibold">{member}</h3>
