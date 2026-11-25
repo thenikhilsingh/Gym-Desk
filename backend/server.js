@@ -7,6 +7,7 @@ const plansRouter = require("./routers/plansRouter");
 const membersRouter = require("./routers/membersRouter");
 const membershipsRouter = require("./routers/membershipsRouter");
 const trainersRouter = require("./routers/trainersRouter");
+const { indexRouter } = require("./routers/indexRouter");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use("/api", indexRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/plans", plansRouter);
 app.use("/api/members", membersRouter);

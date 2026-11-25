@@ -24,6 +24,7 @@ import Memberships from "./pages/admin/Memberships.jsx";
 import Trainers from "./pages/admin/Trainers.jsx";
 import Payments from "./pages/admin/Payments.jsx";
 import MembersPayment from "./pages/members/MembersPayment.jsx";
+import BackendStartupGate from "./components/BackendStartupGate.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -55,18 +56,20 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="light"
-      />
-    </AuthProvider>
+    <BackendStartupGate>
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="light"
+        />
+      </AuthProvider>
+    </BackendStartupGate>
   </StrictMode>,
 );
