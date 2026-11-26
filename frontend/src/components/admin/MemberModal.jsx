@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Camera, X } from "lucide-react";
 import useAxios from "../../hooks/useAxios";
 import { toast } from "react-toastify";
 import useFormatDate from "../../hooks/useFormatDate";
@@ -14,6 +14,8 @@ export default function MemberModal({
 }) {
   const api = useAxios();
   const { formatDate } = useFormatDate();
+  const videoRef = useRef(null);
+  const cameraInputRef = useRef(null);
   const [payload, setPayload] = useState({
     firstName: "",
     lastName: "",
@@ -30,7 +32,80 @@ export default function MemberModal({
   });
   const [memberDetails, setMemberDetails] = useState({});
   const [loading, setLoading] = useState(false);
+  const [cameraStream, setCameraStream] = useState(null);
+
+  useEffect(() => {
+    if (videoRef.current && cameraStream) {
+      videoRef.current.srcObject = cameraStream;
+    }
+
+    return () => {
+      cameraStream?.getTracks().forEach((track) => track.stop());
+    };
+  }, [cameraStream]);
+
+  const stopCamera = () => {
+    cameraStream?.getTracks().forEach((track) => track.stop());
+    setCameraStream(null);
+  };
+
+  const openCamera = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      cameraInputRef.current?.click();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } },
+        audio: false,
+      });
+      setCameraStream(stream);
+    } catch (error) {
+      console.error("Could not open member photo camera:", error);
+      toast.error("Camera access failed. Allow camera permission or choose an image.");
+    }
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video?.videoWidth) {
+      toast.error("Camera is not ready yet.");
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      toast.error("Could not capture the photo.");
+      return;
+    }
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          toast.error("Could not capture the photo.");
+          return;
+        }
+
+        setPayload((currentPayload) => ({
+          ...currentPayload,
+          profileImage: new File([blob], `member-${Date.now()}.jpg`, {
+            type: blob.type,
+          }),
+        }));
+        stopCamera();
+      },
+      "image/jpeg",
+      0.9,
+    );
+  };
+
   const handleClose = () => {
+    stopCamera();
     closeModal();
     setPayload({
       firstName: "",
@@ -340,13 +415,38 @@ export default function MemberModal({
           <div className="md:col-span-2">
             <label className="block mb-2 font-medium">Profile Image</label>
 
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="file"
+                className="w-full border rounded-lg px-4 py-2"
+                name="profileImage"
+                accept="image/*"
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={openCamera}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100"
+              >
+                <Camera size={18} />
+                Take Photo
+              </button>
+            </div>
             <input
+              ref={cameraInputRef}
               type="file"
-              className="w-full border rounded-lg px-4 py-2"
               name="profileImage"
               accept="image/*"
+              capture="environment"
               onChange={handleChange}
+              className="hidden"
+              tabIndex={-1}
             />
+            {payload.profileImage && (
+              <p className="mt-2 text-sm text-gray-600">
+                Selected: {payload.profileImage.name}
+              </p>
+            )}
           </div>
         </div>
 
@@ -375,6 +475,54 @@ export default function MemberModal({
           </button>
         </div>
       </form>
+      {cameraStream && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="member-camera-title"
+            className="w-full max-w-xl rounded-2xl bg-white p-4 shadow-xl"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h3 id="member-camera-title" className="text-lg font-semibold">
+                Take Member Photo
+              </h3>
+              <button
+                type="button"
+                onClick={stopCamera}
+                aria-label="Close camera"
+                className="rounded-lg p-2 hover:bg-gray-100"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              className="aspect-video w-full rounded-lg bg-black object-cover"
+            />
+            <div className="mt-4 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={stopCamera}
+                className="rounded-lg border px-5 py-2 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={capturePhoto}
+                className="inline-flex items-center gap-2 rounded-lg bg-black px-5 py-2 text-white hover:bg-gray-800"
+              >
+                <Camera size={18} />
+                Capture Photo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
