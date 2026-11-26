@@ -9,6 +9,12 @@ const {
 } = require("../db/queries");
 const { uploadOnCloudinary, cloudinary } = require("../utils/cloudinary");
 
+const emptyToNull = (value) =>
+  typeof value === "string" &&
+  (value.trim() === "" || value.trim().toLowerCase() === "null")
+    ? null
+    : value;
+
 const getAllMembers = async (req, res) => {
   try {
     const allMembers = await getMembers();
@@ -64,13 +70,13 @@ const addMember = async (req, res) => {
       lastName,
       phone,
       gender,
-      dob,
+      emptyToNull(dob),
       address,
       emergencyContactName,
       emergencyContactPhone,
-      joinDate,
-      height,
-      weight,
+      emptyToNull(joinDate),
+      emptyToNull(height),
+      emptyToNull(weight),
       profileImageURL,
       profileImagePublicId,
     );
@@ -116,6 +122,7 @@ const editMember = async (req, res) => {
 
     let profileImageURL = null;
     let profileImagePublicId = null;
+    let previousProfileImagePublicId = null;
     const localPath = req.file?.path;
     if (localPath) {
       const uploadedFile = await uploadOnCloudinary(localPath);
@@ -124,10 +131,7 @@ const editMember = async (req, res) => {
           message: "Upload failed",
         });
       }
-      // Delete previous image if it exists
-      if (member.profile_image_public_id) {
-        await cloudinary.uploader.destroy(member.profile_image_public_id);
-      }
+      previousProfileImagePublicId = member.profile_image_public_id;
       profileImageURL = uploadedFile.secure_url;
       profileImagePublicId = uploadedFile.public_id;
     }
@@ -138,16 +142,30 @@ const editMember = async (req, res) => {
       lastName ?? null,
       phone ?? null,
       gender ?? null,
-      dob ?? null,
+      emptyToNull(dob),
       address ?? null,
       emergencyContactName ?? null,
       emergencyContactPhone ?? null,
-      joinDate ?? null,
-      height ?? null,
-      weight ?? null,
+      emptyToNull(joinDate),
+      emptyToNull(height),
+      emptyToNull(weight),
       profileImageURL ?? null,
       profileImagePublicId ?? null,
+      Object.prototype.hasOwnProperty.call(req.body, "dob"),
+      Object.prototype.hasOwnProperty.call(req.body, "height"),
+      Object.prototype.hasOwnProperty.call(req.body, "weight"),
     );
+
+    if (previousProfileImagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(previousProfileImagePublicId);
+      } catch (error) {
+        console.error(
+          `Member ${memberId} was updated, but its previous profile image could not be deleted.`,
+          error,
+        );
+      }
+    }
 
     return res
       .status(200)

@@ -124,7 +124,7 @@ const createMember = async (
   const member = await pool.query(
     `
      INSERT INTO members (first_name, last_name, phone, gender, date_of_birth, address,emergency_contact_name, emergency_contact_phone, join_date, height, weight, profile_image_url,profile_image_public_id)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+    VALUES($1,$2,$3,$4,$5,$6,$7,$8,COALESCE($9, CURRENT_DATE),$10,$11,$12,$13)
     RETURNING *
     `,
     [
@@ -161,6 +161,9 @@ const updateMemberById = async (
   weight,
   profileImageURL,
   profileImagePublicId,
+  dobProvided,
+  heightProvided,
+  weightProvided,
 ) => {
   const updatedMember = await pool.query(
     `
@@ -169,13 +172,13 @@ const updateMemberById = async (
 last_name = COALESCE($3, last_name),
 phone = COALESCE($4, phone),
 gender = COALESCE($5, gender),
-date_of_birth = COALESCE($6, date_of_birth),
+date_of_birth = CASE WHEN $15 THEN $6 ELSE date_of_birth END,
 address = COALESCE($7, address),
 emergency_contact_name = COALESCE($8, emergency_contact_name),
 emergency_contact_phone = COALESCE($9, emergency_contact_phone),
 join_date = COALESCE($10, join_date),
-height = COALESCE($11, height),
-weight = COALESCE($12, weight),
+height = CASE WHEN $16 THEN $11 ELSE height END,
+weight = CASE WHEN $17 THEN $12 ELSE weight END,
 profile_image_url = COALESCE($13, profile_image_url),
 profile_image_public_id = COALESCE($14, profile_image_public_id),
 updated_at=CURRENT_TIMESTAMP
@@ -196,6 +199,9 @@ WHERE id=$1 RETURNING *
       weight,
       profileImageURL,
       profileImagePublicId,
+      dobProvided,
+      heightProvided,
+      weightProvided,
     ],
   );
   return updatedMember.rows[0];

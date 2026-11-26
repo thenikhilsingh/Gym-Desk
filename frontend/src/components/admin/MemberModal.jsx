@@ -96,17 +96,19 @@ export default function MemberModal({
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("firstName", payload.firstName);
-      formData.append("lastName", payload.lastName);
-      formData.append("phone", payload.phone);
-      formData.append("gender", payload.gender);
-      formData.append("dob", payload.dob);
-      formData.append("address", payload.address);
-      formData.append("emergencyContactName", payload.emergencyContactName);
-      formData.append("emergencyContactPhone", payload.emergencyContactPhone);
-      formData.append("joinDate", payload.joinDate);
-      formData.append("height", payload.height);
-      formData.append("weight", payload.weight);
+      const appendField = (name, value) =>
+        formData.append(name, value ?? "");
+      appendField("firstName", payload.firstName);
+      appendField("lastName", payload.lastName);
+      appendField("phone", payload.phone);
+      appendField("gender", payload.gender);
+      appendField("dob", payload.dob);
+      appendField("address", payload.address);
+      appendField("emergencyContactName", payload.emergencyContactName);
+      appendField("emergencyContactPhone", payload.emergencyContactPhone);
+      appendField("joinDate", payload.joinDate);
+      appendField("height", payload.height);
+      appendField("weight", payload.weight);
       if (payload.profileImage) {
         formData.append("profileImage", payload.profileImage);
       }
